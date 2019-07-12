@@ -1,5 +1,6 @@
 // const webpack = require('webpack')
 const path = require('path')
+const pxToUnit = require('stylus-px-to-relative-unit')
 // const appData = require('./data.json')
 // const seller = appData.seller
 // const goods = appData.goods
@@ -46,6 +47,21 @@ module.exports = {
   //       })
   //     }
   //   },
+  css: {
+    loaderOptions: {
+      stylus: {
+        use: [
+          pxToUnit({
+            targetUnit: 'vw',
+            ignoreThreshold: 1,
+            viewportWidth: 1080,
+            viewportHeight: 1920,
+            htmlFontSize: 37.5
+          })
+        ]
+      }
+    }
+  },
   devServer: {
     proxy: {
       '/': {
@@ -57,11 +73,11 @@ module.exports = {
   },
   chainWebpack (config) {
     config.resolve.alias
-      .set('assets', resolve('src/assets'))
-      .set('views', resolve('src/views/'))
-      .set('styles', resolve('src/assets/styles'))
-      .set('components', resolve('src/components'))
-      .set('api', resolve('src/api'))
+      .set('@views', resolve('src/views/'))
+      .set('@models', resolve('src/models'))
+      .set('@components', resolve('src/components'))
+      .set('@api', resolve('src/api'))
+      .set('@util', resolve('src/util'))
   },
   pwa: {
     name: 'My App',

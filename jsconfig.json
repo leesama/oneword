@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@components/*": ["oneword/src/components/*"],
+      "@models/*": ["oneword/src/models/*"],
+      "@api/*": ["oneword/src/api/*"],
+      "@views/*": ["oneword/src/views/*"]
+    }
+  },
+  // "exclude": ["oneword/node_modules", "oneword/dist", "onewordback"],
+  "include": ["./oneword/src/*"]
+}

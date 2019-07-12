@@ -8,9 +8,10 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@better-scroll/core": "^2.0.0-alpha.18",
+    "animejs": "^3.0.1",
     "axios": "^0.19.0",
     "register-service-worker": "^1.6.2",
-    "terser": "^4.0.0",
     "vue": "^2.6.10",
     "vue-router": "^3.0.3",
     "vuex": "^3.0.1"
@@ -26,6 +27,7 @@
     "eslint-plugin-vue": "^5.0.0",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
+    "stylus-px-to-relative-unit": "^1.2.0",
     "vue-template-compiler": "^2.6.10"
   }
 }

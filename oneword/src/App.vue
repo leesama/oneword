@@ -1,15 +1,13 @@
 <template>
   <div id="app">
     <router-view />
-    <span v-if="contentStatus">大江东去浪淘尽,滚滚长江东逝水</span>
+
     <loading-font v-if="LoadingStatus"></loading-font>
   </div>
 </template>
 <script>
-import LoadingFont from './common/components/LoadingFont'
-
-import { getfont } from './models/static.js'
-
+import LoadingFont from '@components/loading-font/loading-font'
+import { getfont } from '@models/static'
 export default {
   data () {
     return {
@@ -29,6 +27,7 @@ export default {
     //   this.hideLoading()
     //   this.showContent()
     // }
+
     await this.setFont()
     this.showContent()
   },
@@ -64,5 +63,5 @@ export default {
 </script>
 <style lang="stylus">
 span
-  font-family FZQingKeBenYueSongS-R-GB
+  font-family FZSuXinShiLiuKaiS-R-GB
 </style>
