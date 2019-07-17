@@ -33,9 +33,7 @@ export default {
   name: 'scroll-x',
   data () {
     return {
-      data: { time: '2019.07.13', cards: [
-        
-      ] },
+      data: { time: '2019.07.13', cards: [] },
       list: [
         [LONG_LINE_HEIGHT, 90, 0, -22, 0],
         [LONG_LINE_HEIGHT, 50, 1, -10, 0],
