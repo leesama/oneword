@@ -1,8 +1,8 @@
 <template>
   <div id="app">
+    <!-- <router-view v-if="contentShow" /> -->
     <router-view />
-
-    <loading-font v-if="LoadingStatus"></loading-font>
+    <loading-font v-if="LoadingShow"></loading-font>
   </div>
 </template>
 <script>
@@ -11,8 +11,8 @@ import { getfont } from '@models/static'
 export default {
   data () {
     return {
-      contentStatus: false,
-      LoadingStatus: false
+      contentShow: false,
+      LoadingShow: false
     }
   },
   // 如果缓存中有值，设置字体之后展示内容界面，如果没值，展示loading界面，设置字体，展示内容
@@ -27,7 +27,6 @@ export default {
     //   this.hideLoading()
     //   this.showContent()
     // }
-
     await this.setFont()
     this.showContent()
   },
@@ -38,13 +37,13 @@ export default {
       return cacheKey.some(key => key.includes('precache'))
     },
     showLoading () {
-      this.LoadingStatus = true
+      this.LoadingShow = true
     },
     hideLoading () {
-      this.LoadingStatus = false
+      this.LoadingShow = false
     },
     showContent () {
-      this.contentStatus = true
+      this.contentShow = true
     },
 
     async setFont () {
@@ -61,7 +60,4 @@ export default {
   components: { LoadingFont }
 }
 </script>
-<style lang="stylus">
-span
-  font-family FZSuXinShiLiuKaiS-R-GB
-</style>
+<style lang="stylus"></style>

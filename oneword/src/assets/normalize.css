@@ -31,6 +31,7 @@ xmp {
   margin: 0;
   padding: 0;
 }
+
 body,
 input,
 textarea,
@@ -43,7 +44,8 @@ code,
 kbd,
 samp {
   line-height: 1.5;
-  font-family: tahoma, arial, 'Hiragino Sans GB', simsun, sans-serif;
+
+  /* font-family: tahoma, arial, 'Hiragino Sans GB', simsun, sans-serif; */
 }
 h1,
 h2,
@@ -65,7 +67,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: tahoma, arial, 'Hiragino Sans GB', '微软雅黑', simsun, sans-serif;
+  /* font-family: tahoma, arial, 'Hiragino Sans GB', '微软雅黑', simsun, sans-serif; */
 }
 h1,
 h2,
@@ -176,7 +178,7 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 body {
-  font-family: Arial, 'Microsoft Yahei', 'Helvetica Neue', Helvetica, sans-serif;
+  /* font-family: Arial, 'Microsoft Yahei', 'Helvetica Neue', Helvetica, sans-serif; */
   color: #333;
   font-size: 0.28em;
   line-height: 1;

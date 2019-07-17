@@ -15,7 +15,6 @@ workbox.clientsClaim()
  */
 workbox.precaching.precacheAndRoute(self.__precacheManifest || [])
 
-// 对我们请求的数据进行缓存，这里采用 networkFirst 策略
 // precacheAndRoute将采用缓存优先策略，这里我们请求的字体将使用缓存策略
 workbox.precaching.precacheAndRoute(['font.css'])
 

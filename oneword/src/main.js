@@ -4,6 +4,7 @@ import router from './routers'
 import store from './store'
 import ErrorPlugin from './util/errorPlugin'
 import anime from 'animejs'
+// 发布的时候记得打开registerServiceWorker
 // import './registerServiceWorker'
 import './assets/iconfont.css'
 import './assets/normalize.css'
