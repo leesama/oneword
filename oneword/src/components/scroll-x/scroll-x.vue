@@ -9,11 +9,9 @@
     ref="baseScroll"
   >
     <div class="scroll-content">
-      <div class="loadding-wrapper" ref="loaddingWrapper">
-        <ul ref="itemlist">
-          <li v-for="(item, index) in list" :style="{height: item[0] }" :key="index"></li>
-        </ul>
-      </div>
+      <ul ref="itemlist">
+        <li v-for="(item, index) in list" :style="{height: item[0] }" :key="index"></li>
+      </ul>
       <slot></slot>
     </div>
   </base-scroll>
@@ -21,7 +19,6 @@
 
 <script>
 import BaseScroll from '@components/scroll-base/scroll-base'
-
 const LONG_LINE_HEIGHT = '20px'
 const SHORT_LINE_HEIGHT = '10px'
 // scroll滚动的距离
@@ -33,7 +30,130 @@ export default {
   name: 'scroll-x',
   data () {
     return {
-      data: { time: '2019.07.13', cards: [] },
+      data: {
+        textcardlist: [
+          {
+            picpath:
+              'http://jhyiyan.oss-cn-beijing.aliyuncs.com/2019/07/16/06913ef06d7e7032997a3c0b07b07771.jpg',
+            ava: '1',
+            commentcnt: '460',
+            commercialtag: '-1.0',
+            from: '木心',
+            originbook: {
+              picpath:
+                'http://115.28.168.103:8080/yiyanpic/pic/2015/07/16/5a5e712609939bbaa67581c19e7ef9b0.jpg',
+              bookid: '119',
+              ava: '1',
+              cardcnt: '1041',
+              bookname: '给你的情书'
+            },
+            textcardid: '2998179',
+            // 字体
+            fonttype: '1',
+            collectcnt: '196',
+            creator: {
+              uid: '9999',
+              username: '一言',
+              device: '0',
+              gender: 'M',
+              fanscnt: '0',
+              smallavatar:
+                'http://115.28.168.103:8080/yiyanpic/avatar/2015/06/22/26de07660a311398e1a2ec419df7575d_.jpg',
+              largeavatar:
+                'http://115.28.168.103:8080/yiyanpic/avatar/2015/06/22/26de07660a311398e1a2ec419df7575d.jpg'
+            },
+            content: '还没分别，\n已在心里写信。',
+            feedid: '7197800',
+            // 类型
+            category: '1000',
+            title: '',
+            rec: '0',
+            original: '0',
+            showtime: '2019-07-17 03:00:43.0',
+            priv: '0',
+            replycnt: '29',
+            datetime: '2019-07-17 03:00:43.0'
+          },
+          {
+            picpath:
+              'http://jhyiyan.oss-cn-beijing.aliyuncs.com/2019/07/16/09fb4bd5543898386c79d6d37acd9a04.jpg',
+            ava: '1',
+            commentcnt: '4',
+            commercialtag: '-1.0',
+            from: '',
+            originbook: {
+              bookid: '2',
+              ava: '1',
+              bookname: ' '
+            },
+            textcardid: '2995745',
+            fonttype: '2',
+            creator: {
+              uid: '9999',
+              username: '一言',
+              device: '0',
+              gender: 'M',
+              fanscnt: '0',
+              smallavatar:
+                'http://115.28.168.103:8080/yiyanpic/avatar/2015/06/22/26de07660a311398e1a2ec419df7575d_.jpg',
+              largeavatar:
+                'http://115.28.168.103:8080/yiyanpic/avatar/2015/06/22/26de07660a311398e1a2ec419df7575d.jpg'
+            },
+            content: '',
+            feedid: '7193228',
+            category: '100002',
+            title: '用“暗语”和“风”写一首小诗',
+            rec: '0',
+            moretagstring: '',
+            original: '1',
+            showtime: '2019-07-16 20:24:42.0',
+            priv: '2',
+            replycnt: '548',
+            datetime: '2019-07-16 20:24:42.0'
+          },
+          {
+            picpath:
+              'http://jhyiyan.oss-cn-beijing.aliyuncs.com/2019/07/16/d35873ceaed5031c869e316a5244ba0f.jpg',
+            ava: '1',
+            commentcnt: '397',
+            commercialtag: '-1.0',
+            from: '《美食、祈祷和恋爱》',
+            originbook: {
+              picpath:
+                'http://115.28.168.103:8080/yiyanpic/pic/2015/07/16/5a5e712609939bbaa67581c19e7ef9b0.jpg',
+              bookid: '119',
+              ava: '1',
+              cardcnt: '1041',
+              bookname: '给你的情书'
+            },
+            textcardid: '2995720',
+            fonttype: '3',
+            collectcnt: '193',
+            dislikecnt: '2',
+            creator: {
+              uid: '9999',
+              username: '一言',
+              device: '0',
+              gender: 'M',
+              fanscnt: '0',
+              smallavatar:
+                'http://115.28.168.103:8080/yiyanpic/avatar/2015/06/22/26de07660a311398e1a2ec419df7575d_.jpg',
+              largeavatar:
+                'http://115.28.168.103:8080/yiyanpic/avatar/2015/06/22/26de07660a311398e1a2ec419df7575d.jpg'
+            },
+            content:
+              'Sometimes to lose balance for love is part of living balanced life.\n有时候因为爱失去平衡，也是平衡生活的一部分。',
+            feedid: '7193159',
+            category: '3',
+            title: '',
+            rec: '0',
+            original: '0',
+            priv: '0',
+            replycnt: '16',
+            datetime: '2019-07-16 20:20:06.0'
+          }
+        ]
+      },
       list: [
         [LONG_LINE_HEIGHT, 90, 0, -22, 0],
         [LONG_LINE_HEIGHT, 50, 1, -10, 0],
@@ -60,6 +180,12 @@ export default {
     this.animateByScroll(scrollX)
   },
   methods: {
+    initForAnimate () {
+      // 每个li容器的高度和li节点缓存到实例上，为了以后计算高度做准备
+      this.itemHeight = this.$refs.itemlist.clientHeight / 13
+      // 将dom缓存起来
+      this.items = this.$refs.itemlist.querySelectorAll('li')
+    },
     scroll (e) {
       const x = e.x
       // 持续的动画执行时，会disable scroll,当scroll回滚到0的时候，让其启用
@@ -68,7 +194,7 @@ export default {
       }
       // 如果滚动时间小于300ms,不传递scroll的值到动画
       if (new Date().getTime() - this.scrollBeginTime < 300) {
-        // 如果滚动的距离大于20，执行固定动画,滚动到固定值
+        // 如果滚动的距离大于20，滚动到固定值
         if (x > 40) {
           this.fixedScroll()
           this.animateByScroll(scrollX)
@@ -88,13 +214,6 @@ export default {
       this.$nextTick(function () {
         this.items = this.$refs.itemlist.querySelectorAll('li')
       })
-    },
-
-    initForAnimate () {
-      // 每个li容器的高度和li节点缓存到实例上，为了以后计算高度做准备
-      this.itemHeight = this.$refs.loaddingWrapper.clientHeight / 13
-      // 将dom缓存起来
-      this.items = this.$refs.itemlist.querySelectorAll('li')
     },
     // 根据scroll值进行动画
     animateByScroll (val) {
@@ -160,18 +279,8 @@ export default {
 .scroll-content
   display inline-flex
   align-items center
-.scroll-item
-  height 1100px
-  line-height 1100px
-  font-size 24px
-  display inline-block
-  vertical-align top
-  text-align center
-  padding 0 10px
-.loadding-wrapper
-  display inline-flex
-  align-items center
 ul
+  width 200px
   margin-left -200px
   display grid
   grid-template-columns 5px

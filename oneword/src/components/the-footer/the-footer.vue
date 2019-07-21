@@ -70,7 +70,7 @@ i
     font-size 110px
 .wrapper
   display flex
-  height 120px
+  height 145px
   background-color rgba(242, 242, 242, 0.7)
   // box-shadow 2px 2px 5px #333333
   box-shadow '0px' '2px' '5px' '5px' #dddddd

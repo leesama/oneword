@@ -7,7 +7,7 @@
 </template>
 <script>
 import LoadingFont from '@components/loading-font/loading-font'
-import { getfont } from '@models/static'
+import { getfont } from '@models'
 export default {
   data () {
     return {

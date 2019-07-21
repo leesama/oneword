@@ -1,8 +1,8 @@
 // const webpack = require('webpack')
 const path = require('path')
 const pxToUnit = require('stylus-px-to-relative-unit')
-// const appData = require('./data.json')
-// const seller = appData.seller
+const appData = require('./1.json')
+const textcardlist = appData.textcardlist
 // const goods = appData.goods
 // const ratings = appData.ratings
 
@@ -11,42 +11,6 @@ function resolve (dir) {
 }
 
 module.exports = {
-  //   css: {
-  //     loaderOptions: {
-  //       stylus: {
-  //         'resolve url': true,
-  //         import: ['./src/theme']
-  //       }
-  //     }
-  //   },
-  //   pluginOptions: {
-  //     'cube-ui': {
-  //       postCompile: true,
-  //       theme: true
-  //     }
-  //   },
-  //   devServer: {
-  //     before (app) {
-  //       app.get('/api/seller', function (req, res) {
-  //         res.json({
-  //           errno: 0,
-  //           data: seller
-  //         })
-  //       })
-  //       app.get('/api/goods', function (req, res) {
-  //         res.json({
-  //           errno: 0,
-  //           data: goods
-  //         })
-  //       })
-  //       app.get('/api/ratings', function (req, res) {
-  //         res.json({
-  //           errno: 0,
-  //           data: ratings
-  //         })
-  //       })
-  //     }
-  //   },
   css: {
     loaderOptions: {
       stylus: {
@@ -54,8 +18,8 @@ module.exports = {
           pxToUnit({
             targetUnit: 'vw',
             ignoreThreshold: 1,
-            viewportWidth: 1080,
-            viewportHeight: 1920,
+            viewportWidth: 1242,
+            viewportHeight: 2208,
             htmlFontSize: 37.5
           })
         ]
@@ -63,6 +27,13 @@ module.exports = {
     }
   },
   devServer: {
+    before (app) {
+      app.get('/yiyan/getfeeds', function (req, res) {
+        res.json({
+          data: textcardlist
+        })
+      })
+    },
     proxy: {
       '/': {
         target: 'http://localhost:3000/',
@@ -78,6 +49,7 @@ module.exports = {
       .set('@components', resolve('src/components'))
       .set('@api', resolve('src/api'))
       .set('@util', resolve('src/util'))
+      .set('@assets', resolve('src/assets'))
   },
   pwa: {
     name: 'My App',
