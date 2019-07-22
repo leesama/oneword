@@ -1,11 +1,11 @@
 <template>
   <div class="container">
     <div class="time">
-      <span>2019</span>
+      <span>{{year}}</span>
       <span>/</span>
-      <span>07</span>
+      <span>{{month}}</span>
       <span>/</span>
-      <span>17</span>
+      <span>{{day}}</span>
     </div>
     <div class="card border">
       <div class="card-header">
@@ -45,12 +45,23 @@ export default {
     }
   },
   props: {
-    time: { type: String, default: '2019-07-07 03:00:23.0' },
-    cardinfo: {
-      type: Array,
+    cardInfo: {
+      type: Object,
       default () {
         return []
       }
+    }
+  },
+  mounted () {},
+  computed: {
+    year () {
+      return this.cardInfo.time.substr(0, 4)
+    },
+    month () {
+      return this.cardInfo.time.substr(5, 2)
+    },
+    day () {
+      return this.cardInfo.time.substr(8, 2)
     }
   },
   components: { CardFooter }

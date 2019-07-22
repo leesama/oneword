@@ -1,7 +1,7 @@
-// const webpack = require('webpack')
+const express = require('express')
 const path = require('path')
 const pxToUnit = require('stylus-px-to-relative-unit')
-const appData = require('./1.json')
+const appData = require('./mock/1.json')
 const textcardlist = appData.textcardlist
 // const goods = appData.goods
 // const ratings = appData.ratings
@@ -27,13 +27,13 @@ module.exports = {
     }
   },
   devServer: {
-    before (app) {
-      app.get('/yiyan/getfeeds', function (req, res) {
-        res.json({
-          data: textcardlist
-        })
-      })
-    },
+    // before (app) {
+    //   app.get('/yiyan/getfeeds', function (req, res) {
+    //     res.json({
+    //       data: textcardlist
+    //     })
+    //   })
+    // }
     proxy: {
       '/': {
         target: 'http://localhost:3000/',

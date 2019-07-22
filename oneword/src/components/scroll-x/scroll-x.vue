@@ -10,7 +10,11 @@
   >
     <div class="scroll-content">
       <ul ref="itemlist">
-        <li v-for="(item, index) in list" :style="{height: item[0] }" :key="index"></li>
+        <li
+          v-for="(item, index) in list"
+          :style="{height: item[0] }"
+          :key="index"
+        ></li>
       </ul>
       <slot></slot>
     </div>
@@ -30,130 +34,7 @@ export default {
   name: 'scroll-x',
   data () {
     return {
-      data: {
-        textcardlist: [
-          {
-            picpath:
-              'http://jhyiyan.oss-cn-beijing.aliyuncs.com/2019/07/16/06913ef06d7e7032997a3c0b07b07771.jpg',
-            ava: '1',
-            commentcnt: '460',
-            commercialtag: '-1.0',
-            from: '木心',
-            originbook: {
-              picpath:
-                'http://115.28.168.103:8080/yiyanpic/pic/2015/07/16/5a5e712609939bbaa67581c19e7ef9b0.jpg',
-              bookid: '119',
-              ava: '1',
-              cardcnt: '1041',
-              bookname: '给你的情书'
-            },
-            textcardid: '2998179',
-            // 字体
-            fonttype: '1',
-            collectcnt: '196',
-            creator: {
-              uid: '9999',
-              username: '一言',
-              device: '0',
-              gender: 'M',
-              fanscnt: '0',
-              smallavatar:
-                'http://115.28.168.103:8080/yiyanpic/avatar/2015/06/22/26de07660a311398e1a2ec419df7575d_.jpg',
-              largeavatar:
-                'http://115.28.168.103:8080/yiyanpic/avatar/2015/06/22/26de07660a311398e1a2ec419df7575d.jpg'
-            },
-            content: '还没分别，\n已在心里写信。',
-            feedid: '7197800',
-            // 类型
-            category: '1000',
-            title: '',
-            rec: '0',
-            original: '0',
-            showtime: '2019-07-17 03:00:43.0',
-            priv: '0',
-            replycnt: '29',
-            datetime: '2019-07-17 03:00:43.0'
-          },
-          {
-            picpath:
-              'http://jhyiyan.oss-cn-beijing.aliyuncs.com/2019/07/16/09fb4bd5543898386c79d6d37acd9a04.jpg',
-            ava: '1',
-            commentcnt: '4',
-            commercialtag: '-1.0',
-            from: '',
-            originbook: {
-              bookid: '2',
-              ava: '1',
-              bookname: ' '
-            },
-            textcardid: '2995745',
-            fonttype: '2',
-            creator: {
-              uid: '9999',
-              username: '一言',
-              device: '0',
-              gender: 'M',
-              fanscnt: '0',
-              smallavatar:
-                'http://115.28.168.103:8080/yiyanpic/avatar/2015/06/22/26de07660a311398e1a2ec419df7575d_.jpg',
-              largeavatar:
-                'http://115.28.168.103:8080/yiyanpic/avatar/2015/06/22/26de07660a311398e1a2ec419df7575d.jpg'
-            },
-            content: '',
-            feedid: '7193228',
-            category: '100002',
-            title: '用“暗语”和“风”写一首小诗',
-            rec: '0',
-            moretagstring: '',
-            original: '1',
-            showtime: '2019-07-16 20:24:42.0',
-            priv: '2',
-            replycnt: '548',
-            datetime: '2019-07-16 20:24:42.0'
-          },
-          {
-            picpath:
-              'http://jhyiyan.oss-cn-beijing.aliyuncs.com/2019/07/16/d35873ceaed5031c869e316a5244ba0f.jpg',
-            ava: '1',
-            commentcnt: '397',
-            commercialtag: '-1.0',
-            from: '《美食、祈祷和恋爱》',
-            originbook: {
-              picpath:
-                'http://115.28.168.103:8080/yiyanpic/pic/2015/07/16/5a5e712609939bbaa67581c19e7ef9b0.jpg',
-              bookid: '119',
-              ava: '1',
-              cardcnt: '1041',
-              bookname: '给你的情书'
-            },
-            textcardid: '2995720',
-            fonttype: '3',
-            collectcnt: '193',
-            dislikecnt: '2',
-            creator: {
-              uid: '9999',
-              username: '一言',
-              device: '0',
-              gender: 'M',
-              fanscnt: '0',
-              smallavatar:
-                'http://115.28.168.103:8080/yiyanpic/avatar/2015/06/22/26de07660a311398e1a2ec419df7575d_.jpg',
-              largeavatar:
-                'http://115.28.168.103:8080/yiyanpic/avatar/2015/06/22/26de07660a311398e1a2ec419df7575d.jpg'
-            },
-            content:
-              'Sometimes to lose balance for love is part of living balanced life.\n有时候因为爱失去平衡，也是平衡生活的一部分。',
-            feedid: '7193159',
-            category: '3',
-            title: '',
-            rec: '0',
-            original: '0',
-            priv: '0',
-            replycnt: '16',
-            datetime: '2019-07-16 20:20:06.0'
-          }
-        ]
-      },
+      data: {},
       list: [
         [LONG_LINE_HEIGHT, 90, 0, -22, 0],
         [LONG_LINE_HEIGHT, 50, 1, -10, 0],
@@ -171,6 +52,15 @@ export default {
       ]
     }
   },
+  props: {
+    listt: {
+      type: Array,
+      default () {
+        return []
+      }
+    }
+  },
+
   mounted () {
     // 加载后滚动条滚动一定距离并禁止scroll
     this.fixedScroll()
@@ -187,18 +77,26 @@ export default {
       this.items = this.$refs.itemlist.querySelectorAll('li')
     },
     scroll (e) {
+      // 如果滚动的距离大于
       const x = e.x
-      // 持续的动画执行时，会disable scroll,当scroll回滚到0的时候，让其启用
-      if (x === 0) {
+      // 持续的动画执行时，会disable scroll,当scroll回滚到0的时候，让其启用,并且执行刷新scroll方法，保证滚动效果正常
+      if (x <= 0) {
+        this.locked = false
         this.$refs.baseScroll.enable()
+        this.$refs.baseScroll.refresh()
+      }
+      if (this.locked) {
+        this.animateByScroll(x)
+        return
       }
       // 如果滚动时间小于300ms,不传递scroll的值到动画
       if (new Date().getTime() - this.scrollBeginTime < 300) {
-        // 如果滚动的距离大于20，滚动到固定值
-        if (x > 40) {
-          this.fixedScroll()
+        // 如果滚动的距离大于scrollX，加锁
+        if (x >= scrollX) {
+          this.locked = true
+          this.$refs.baseScroll.disable()
           this.animateByScroll(scrollX)
-          // this.fixedAmimation()
+          this.$refs.baseScroll.scrollTo(90, 0, 1000)
         }
         return
       }
@@ -247,30 +145,10 @@ export default {
     },
     // 固定的滚动距离
     fixedScroll () {
-      this.$refs.baseScroll.scrollTo(90, 0, 1000)
       // disable： DOM 事件（如 touchstart、touchmove、touchend）的回调函数不再响应。scroll事件不影响，所以回弹的时候，会传递scrollDistance
       this.$refs.baseScroll.disable()
+      this.$refs.baseScroll.scrollTo(0, 0, 3000)
     }
-    // 固定的动画
-    // fixedAmimation () {
-    //   this.items.forEach((item, index) => {
-    //     const x = animationX + this.list[index][4]
-    //     const y =
-    //       this.list[index][2] * this.itemHeight -
-    //       index * this.itemHeight -
-    //       this.list[index][3]
-    //     this.$anime({
-    //       targets: item,
-    //       translateX: x,
-    //       translateY: y,
-    //       rotate: this.list[index][1],
-    //       duration: 1000,
-    //       opacity: 1,
-    //       direction: 'normal',
-    //       easing: 'easeOutCubic'
-    //     })
-    //   })
-    // }
   },
   components: { BaseScroll }
 }

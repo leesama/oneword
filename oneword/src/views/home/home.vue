@@ -9,21 +9,11 @@
       </template>
     </the-header>
     <scroll-x>
-      <card-home></card-home>
-      <span>22222222222222</span>
-      <span>22222222222222</span>
-      <span>22222222222222</span>
-      <span>22222222222222</span>
-      <span>22222222222222</span>
-      <span>222222222222222</span>
-      <span>22222222222222</span>
-      <span>22222222222222</span>
-      <span>22222222222222</span>
-      <span>22222222222222</span>
-      <span>22222222222222</span>
-      <span>22222222222222</span>
-      <span>22222222222222</span>
-      <span>22222222222222</span>
+      <card-home
+        :cardInfo='item'
+        v-for="item of list"
+        :key="item.time"
+      ></card-home>
     </scroll-x>
     <the-footer />
   </div>
@@ -44,10 +34,12 @@ export default {
   },
   async created () {
     const data = await getfeeds()
-    console.log(this.FormatData(data))
+    this.list = this.formatFeedData(data)
   },
+
   methods: {
-    FormatData (data) {
+    // 处理Feed数据
+    formatFeedData (data) {
       let newData = []
       let map = {}
       for (const i of data) {

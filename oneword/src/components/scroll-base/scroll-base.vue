@@ -1,5 +1,8 @@
 <template>
-  <div ref="wrapper" class="scroll-wrapper">
+  <div
+    ref="wrapper"
+    class="scroll-wrapper"
+  >
     <slot></slot>
   </div>
 </template>
@@ -78,6 +81,10 @@ export default {
     scrollDistance: {
       type: Number,
       default: 0
+    },
+    touchEnd: {
+      type: Boolean,
+      default: false
     }
   },
   mounted () {
@@ -97,9 +104,11 @@ export default {
       }
       // better-scroll的初始化
       this.scroll = new BScroll(this.$refs.wrapper, {
+        startX: 90,
         probeType: this.probeType,
         click: this.click,
         scrollX: this.scrollX,
+        useTransition: false,
         tap: 'tap',
         scrollY: false,
         bounceTime: 1500,
@@ -138,6 +147,12 @@ export default {
       if (this.beforeScroll) {
         this.scroll.on('beforeScrollStart', () => {
           this.$emit('beforeScroll')
+        })
+      }
+      if (this.touchEnd) {
+        this.scroll.on('touchEnd', pos => {
+          // 滚动到底部
+          this.$emit('touchEnd', pos)
         })
       }
     },
