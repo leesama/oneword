@@ -24,6 +24,7 @@ export default {
 </script>
 <style lang='stylus' scoped>
 @import '~@common/stylus/mixins.styl'
+
 #loader-wrapper
   background #fff
   flex-direction column

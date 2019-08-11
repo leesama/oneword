@@ -8,22 +8,15 @@
         <i class="iconfont icon-fanhui"></i>
       </template>
     </the-header>
-    <scroll-x>
-      <card-home
-        :cardInfo='item'
-        v-for="item of list"
-        :key="item.time"
-      ></card-home>
-    </scroll-x>
+    <scroll-x :data="list" @refresh="loadData" />
     <the-footer />
   </div>
 </template>
 
 <script>
-import TheHeader from '@components/the-header/the-header'
-import TheFooter from '@components/the-footer/the-footer.vue'
-import ScrollX from '@components/scroll-x/scroll-x'
-import CardHome from '@components/card-home/card-home.vue'
+import TheHeader from '@components/detail/the-header/the-header'
+import TheFooter from '@components/detail/the-footer/the-footer.vue'
+import ScrollX from '@components/scroll/scroll-x/scroll-x'
 import { getfeeds } from '@models'
 export default {
   name: 'Home',
@@ -32,20 +25,21 @@ export default {
       list: []
     }
   },
-  async created () {
-    const data = await getfeeds()
-    this.list = this.formatFeedData(data)
+  created () {
+    this.loadData()
   },
-
   methods: {
-    // 处理Feed数据
+    // 格式化Feed数据
     formatFeedData (data) {
       let newData = []
       let map = {}
       for (const i of data) {
         const time = i.datetime.substring(0, 10)
         if (!map[time]) {
-          newData.push({ time, card: [i] })
+          newData.push({
+            time,
+            card: [i]
+          })
           map[time] = true
         } else {
           for (const j of newData) {
@@ -56,10 +50,22 @@ export default {
           }
         }
       }
-      return newData
+      for (const i of newData) {
+        const itime = i.time
+        i.time = {
+          year: itime.substr(0, 4),
+          month: itime.substr(5, 2),
+          day: itime.substr(8, 2)
+        }
+      }
+      return newData.slice(0, 3)
+    },
+    async loadData () {
+      const data = await getfeeds()
+      this.list = this.formatFeedData(data)
     }
   },
-  components: { TheHeader, TheFooter, ScrollX, CardHome }
+  components: { TheHeader, TheFooter, ScrollX }
 }
 </script>
 <style lang='stylus' scoped>

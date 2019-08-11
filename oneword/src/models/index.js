@@ -1,4 +1,4 @@
-import { get } from '../util/http'
+import { get } from '../common/js/http'
 
 const getfont = get('/font.css')
 const getfeeds = get('/yiyan/getfeeds')

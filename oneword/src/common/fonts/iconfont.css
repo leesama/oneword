@@ -1,0 +1,59 @@
+@font-face {
+  font-family: 'iconfont'; /* project id 1280984 */
+  src: url('//at.alicdn.com/t/font_1280984_s5481hy90w.eot');
+  src: url('//at.alicdn.com/t/font_1280984_s5481hy90w.eot?#iefix')
+      format('embedded-opentype'),
+    url('//at.alicdn.com/t/font_1280984_s5481hy90w.woff2') format('woff2'),
+    url('//at.alicdn.com/t/font_1280984_s5481hy90w.woff') format('woff'),
+    url('//at.alicdn.com/t/font_1280984_s5481hy90w.ttf') format('truetype'),
+    url('//at.alicdn.com/t/font_1280984_s5481hy90w.svg#iconfont') format('svg');
+}
+.iconfont {
+  color: #4a4a4a;
+  font-family: 'iconfont' !important;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-homeclick:before {
+  content: '\e614';
+}
+
+.icon-home:before {
+  content: '\e615';
+}
+.icon-messageclick:before {
+  content: '\e64e';
+}
+
+.icon-message:before {
+  content: '\e64f';
+}
+
+.icon-jia:before {
+  content: '\e659';
+}
+
+.icon-wodeclick:before {
+  content: '\e67b';
+}
+
+.icon-wode:before {
+  content: '\e67c';
+}
+
+.icon-fanhui:before {
+  content: '\e61c';
+}
+
+.icon-sousuoclick:before {
+  content: '\e67d';
+}
+
+.icon-sousuo:before {
+  content: '\e67e';
+}
+.icon-back:before {
+  content: '\e622';
+}

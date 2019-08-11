@@ -2,11 +2,13 @@
   <div id="app">
     <!-- <router-view v-if="contentShow" /> -->
     <router-view />
+    <loading-error></loading-error>
     <loading-font v-if="LoadingShow"></loading-font>
   </div>
 </template>
 <script>
-import LoadingFont from '@components/loading-font/loading-font'
+import LoadingError from '@components/loading/loading-error/loading-error.vue'
+import LoadingFont from '@components/loading/loading-font/loading-font'
 import { getfont } from '@models'
 export default {
   data () {
@@ -57,7 +59,7 @@ export default {
       style.textContent = font
     }
   },
-  components: { LoadingFont }
+  components: { LoadingFont, LoadingError }
 }
 </script>
 <style lang="stylus"></style>

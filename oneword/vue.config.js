@@ -3,14 +3,13 @@ const path = require('path')
 const pxToUnit = require('stylus-px-to-relative-unit')
 const appData = require('./mock/1.json')
 const textcardlist = appData.textcardlist
-// const goods = appData.goods
-// const ratings = appData.ratings
 
 function resolve (dir) {
   return path.join(__dirname, dir)
 }
 
 module.exports = {
+  transpileDependencies: ['vue-clamp', 'resize-detector'],
   css: {
     loaderOptions: {
       stylus: {
@@ -27,20 +26,19 @@ module.exports = {
     }
   },
   devServer: {
-    // before (app) {
-    //   app.get('/yiyan/getfeeds', function (req, res) {
-    //     res.json({
-    //       data: textcardlist
-    //     })
-    //   })
-    // }
-    proxy: {
-      '/': {
-        target: 'http://localhost:3000/',
-        ws: false,
-        changeOrigin: true
-      }
+    before (app) {
+      app.get('/yiyan/getfeeds', function (req, res) {
+        res.json(textcardlist)
+      })
+      app.use(express.static('./mock/static'))
     }
+    //, proxy: {
+    //   '/': {
+    //     target: 'http://localhost:3000/',
+    //     ws: false,
+    //     changeOrigin: true
+    //   }
+    // }
   },
   chainWebpack (config) {
     config.resolve.alias
@@ -49,7 +47,12 @@ module.exports = {
       .set('@components', resolve('src/components'))
       .set('@api', resolve('src/api'))
       .set('@util', resolve('src/util'))
-      .set('@assets', resolve('src/assets'))
+      .set('@common', resolve('src/common'))
+      .set('@mixins', resolve('src/common/mixins'))
+      .set('@mixins', resolve('src/common/mixins'))
+      .set('@js', resolve('src/common/js'))
+      .set('@stylus', resolve('src/common/stylus'))
+      .set('@store', resolve('src/store'))
   },
   pwa: {
     name: 'My App',
