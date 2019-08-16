@@ -1,7 +1,7 @@
 /*
  * @Author: leecho
  * @since: 2019-08-10 23:24:56
- * @lastTime: 2019-08-16 13:17:40
+ * @lastTime: 2019-08-16 22:39:40
  * @LastAuthor: leecho
  * @message: 存储与music组件有关的数据
  */
@@ -10,7 +10,7 @@ const music = {
   state: {
     musicSrc: '',
     imgSrc: '',
-    playing: true,
+    playing: false,
     progress: 0
   },
   mutations: {

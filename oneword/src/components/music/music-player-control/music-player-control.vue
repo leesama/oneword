@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
   name: 'music-player',
   data () {
@@ -19,7 +19,8 @@ export default {
     ...mapGetters({ stateMusicSrc: 'musicSrc' })
   },
   methods: {
-    ...mapActions(['setMusicState', 'setPlayingState']),
+    ...mapActions(['setMusicState']),
+    ...mapMutations({ setPlayingState: 'SET_PLAYING_STATE' }),
     handleTap () {
       this.isPlaying = !this.isPlaying
       if (this.isPlaying) {

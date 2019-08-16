@@ -15,6 +15,7 @@
 </template>
 
 <script>
+import { formatFeedData } from '@js/utils.js'
 import MusicPlayer from '@components/music/music-player/music-player'
 import TheHeader from '@components/detail/the-header/the-header'
 import TheFooter from '@components/detail/the-footer/the-footer.vue'
@@ -31,46 +32,15 @@ export default {
     this.loadData()
   },
   methods: {
-    // 格式化Feed数据
-    formatFeedData (data) {
-      let newData = []
-      let map = {}
-      for (const i of data) {
-        const time = i.datetime.substring(0, 10)
-        if (!map[time]) {
-          newData.push({
-            time,
-            card: [i]
-          })
-          map[time] = true
-        } else {
-          for (const j of newData) {
-            if (j.time === time) {
-              j.card.push(i)
-              break
-            }
-          }
-        }
-      }
-      for (const i of newData) {
-        const itime = i.time
-        i.time = {
-          year: itime.substr(0, 4),
-          month: itime.substr(5, 2),
-          day: itime.substr(8, 2)
-        }
-      }
-      return newData
-    },
     async loadData () {
       const data = await getfeeds()
-      this.list = this.formatFeedData(data).slice(0, 3)
+      this.list = formatFeedData(data).slice(0, 3)
       this.day = 3
     },
     async loadLeftSlipData () {
       const data = await getfeeds()
       this.list = this.list.concat(
-        this.formatFeedData(data).slice(this.day, this.day + 1)
+        formatFeedData(data).slice(this.day, this.day + 1)
       )
       this.day += 1
     }
@@ -87,4 +57,13 @@ export default {
   display flex
   flex-direction column
   overflow hidden
+  span
+    font-size 60px
+    font-family FZQingKeBenYueSongS-R-GB
+  i
+    position absolute
+    right 0
+    top 0
+    font-size 100px
+    font-weight bold
 </style>

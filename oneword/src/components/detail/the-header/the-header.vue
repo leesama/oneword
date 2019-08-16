@@ -18,13 +18,4 @@ header
   text-align center
   height 130px
   background-color #f6f6f6
-  span
-    font-size 60px
-    font-family FZQingKeBenYueSongS-R-GB
-  i
-    position absolute
-    right 0
-    top 0
-    font-size 100px
-    font-weight bold
 </style>

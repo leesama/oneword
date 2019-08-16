@@ -21,9 +21,7 @@ export default {
         this.$refs.audio.play()
         this.rotateBack()
         this.rotateVal = 0
-        if (!this.interval) {
-          this.rotate()
-        }
+        this.rotate()
       })
     },
     playing (newPlaying) {
@@ -35,18 +33,21 @@ export default {
         } else {
           audio.pause()
           clearInterval(this.interval)
+          this.interval = null
         }
       })
     }
   },
   methods: {
     rotate () {
-      this.interval = setInterval(() => {
-        const img = this.$refs.img
-        this.rotateVal += 1
-        img.style.transform = 'rotate(' + this.rotateVal + 'deg)'
-        img.style.transition = '0.1s linear'
-      }, 100)
+      if (!this.interval) {
+        this.interval = setInterval(() => {
+          const img = this.$refs.img
+          this.rotateVal += 1
+          img.style.transform = 'rotate(' + this.rotateVal + 'deg)'
+          img.style.transition = '0.1s linear'
+        }, 20)
+      }
     },
     rotateBack () {
       this.$refs.img.style.transform = 'rotate(0deg)'
