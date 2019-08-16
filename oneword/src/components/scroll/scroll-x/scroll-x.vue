@@ -11,8 +11,8 @@
     @scrollEnd="scrollEnd"
     :touchEnd="true"
     @touchEnd="touchEnd"
-    :leftSilp="true"
-    @leftSilp="leftSilp"
+    :leftSlip="true"
+    @leftSlip="leftSlip"
     ref="baseScroll"
     :bounce="{right:false}"
     :momentum="false"
@@ -29,14 +29,16 @@
           <span>/</span>
           <span>{{item.time.day}}</span>
         </div>
-        <card-fixed
+
+        <component
           ref="cardList"
           :cardInfo="cardItem"
           v-for="cardItem of item.card"
           :key="cardItem.textcardid"
-        ></card-fixed>
+          :is="componentType(cardItem)"
+        ></component>
       </div>
-      <loading-ball />
+      <loading-ball v-if="loadingBallVisible" />
     </div>
   </base-scroll>
 </template>
@@ -44,7 +46,9 @@
 <script>
 import LoadingBall from '@components/loading/loading-ball/loading-ball'
 import BaseScroll from '@components/scroll/scroll-base/scroll-base'
-import CardFixed from '@components/card/card-fixed/card-fixed'
+import TextCard from '@components/card/card-fixed/card-fixed-text/card-fixed-text'
+import MusicCard from '@components/card/card-fixed/card-fixed-music/card-fixed-music'
+import TopicCard from '@components/card/card-fixed/card-fixed-topic/card-fixed-topic'
 const LONG_LINE_HEIGHT = '20px'
 const SHORT_LINE_HEIGHT = '10px'
 // scroll滚动的距离
@@ -56,7 +60,6 @@ export default {
   name: 'scroll-x',
   data () {
     return {
-      scrollX: 0,
       list: [
         [LONG_LINE_HEIGHT, 90, 0, -22, 0],
         [LONG_LINE_HEIGHT, 50, 1, -10, 0],
@@ -71,18 +74,21 @@ export default {
         [SHORT_LINE_HEIGHT, 145, 10, 25, -5],
         [SHORT_LINE_HEIGHT, 90, 11, 40, 4],
         [SHORT_LINE_HEIGHT, 45, 12, 55, -5]
-      ]
+      ],
+      loadingBallVisible: false
     }
   },
   props: {
     data: {
       type: Array,
-      default: null
+      default () {
+        return []
+      }
     }
   },
 
   mounted () {
-    // 加载后禁止scroll让滚动条滚动一定距离
+    // 加载后禁止scroll让滚动条回滚并缓存scroll
     this.fixedScroll()
     // 计算并初始化数据，为滚动动画做准备
     this.initForAnimate()
@@ -99,29 +105,8 @@ export default {
       // 将dom缓存起来
       this.items = this.$refs.li
     },
-
     scroll (e) {
       let x = e.x
-      if (x < 0) {
-        // let rate = (0 - x) / 300
-        // this.$anime.set(this.$refs.cardList[0].$el, {
-        //   scale() {
-        //     return 0.5 + rate
-        //   }
-        // })
-        // const data = this.data
-        // for (let i = 0; i < data.length; i++) {
-        //   x = x + data[i].card.length * this.cardWidth
-        //   // if (x > 0) {
-        //   //   // console.log(x)
-        //   //   return
-        //   // }
-        // // }
-
-        // this.cardDomList[1].geta()
-        return
-      }
-
       if (x > 0) {
         try {
           // scroll左侧动画
@@ -154,9 +139,9 @@ export default {
             this.locked = true
             // 把this.scrollBeginTime null作为标记,防止多次触发
             this.scrollBeginTime = null
-            this.$refs.baseScroll.disable()
+            this.baseScroll.disable()
             this.animateByScroll(scrollX)
-            this.$refs.baseScroll.scrollTo(90, 0, 500)
+            this.baseScroll.scrollTo(90, 0, 500)
             this.$emit('refresh')
             return
           }
@@ -177,12 +162,12 @@ export default {
       this.scrollStartX = e.x
       this.items = null
       // 持续的动画执行时，会disable scroll,当scroll结束时，让其启用
-      if (!this.$refs.baseScroll.isEnabled()) {
-        this.$refs.baseScroll.enable()
+      if (!this.baseScroll.isEnabled()) {
+        this.baseScroll.enable()
       }
-      // 如果数据改变了，刷新bs,必须等到滚动动画执行完毕再刷新，否则页面会卡住
+      // 如果数据改变了，刷新bs,必须等到滚动动画执行完毕时再刷新，否则页面会卡住  （scrollEnd就是滚动动画完毕时）
       if (this.dataChanged) {
-        this.$refs.baseScroll.refresh()
+        this.baseScroll.refresh()
         this.dataChanged = false
       }
     },
@@ -195,12 +180,12 @@ export default {
         // 最多可以滚动12个card
         const rate = this.vw / 10
 
-        if (time < 300 && offsetX > 40) {
+        if (time < 300 && offsetX > 20) {
           // 右滑动
           const scrollN = this.cardIndex - Math.ceil(offsetX / rate) + 1
           this.cardIndex = scrollN <= 0 ? 0 : scrollN
           this.scrollToCardByIndex(this.cardIndex, 1000)
-        } else if (time < 300 && offsetX < -40) {
+        } else if (time < 300 && offsetX < -20) {
           // 左滑动
           // 要滚动到的card在cardlist中对应的索引
           const scrollN = this.cardIndex - Math.ceil(offsetX / rate)
@@ -232,11 +217,7 @@ export default {
       // }
     },
     scrollToCardByIndex (index, time = 500) {
-      this.$refs.baseScroll.scrollToElement(
-        this.cardDomList[index].$el,
-        time,
-        true
-      )
+      this.baseScroll.scrollToElement(this.cardDomList[index].$el, time, true)
     },
     // 根据scroll值进行动画
     animateByScroll (val) {
@@ -274,26 +255,56 @@ export default {
     // 固定的滚动距离
     fixedScroll () {
       // disable： DOM 事件（如 touchstart、touchmove、touchend）的回调函数不再响应。scroll事件不影响，所以回弹的时候，会传递scrollDistance
-      this.$refs.baseScroll.disable()
-      this.$refs.baseScroll.scrollTo(0, 0, 3000)
+      this.baseScroll = this.$refs.baseScroll
+      this.baseScroll.disable()
+      setTimeout(() => {
+        this.baseScroll.scrollTo(0, 0, 1000)
+      }, 500)
     },
-    leftSilp () {
-      this.$refs.baseScroll.leftSilpfinish()
+    leftSlip () {
+      this.$emit('leftSlip')
+      this.loadingBallVisible = true
+    },
+    componentType (cardInfo) {
+      return cardInfo.category === '2000'
+        ? 'MusicCard'
+        : cardInfo.category === '100002'
+          ? 'TopicCard'
+          : 'TextCard'
     }
   },
   watch: {
     // data改变时缓存dom和一些信息用于滑动动画
     data () {
-      this.dataChanged = true
-      this.$nextTick(() => {
-        // 缓存cardDom
-        this.cardDomList = this.$refs.cardList
-        // 缓存信息到store
-        this.vw = window.innerWidth
-      })
+      // 左滑
+      if (this.loadingBallVisible) {
+        this.$nextTick(() => {
+          this.cardDomList = this.$refs.cardList
+          this.baseScroll.leftSlipfinish()
+          setTimeout(() => {
+            this.baseScroll.refresh()
+          }, 20)
+          this.loadingBallVisible = false
+        })
+      } else {
+        // 刷新
+        this.dataChanged = true
+        this.$nextTick(() => {
+          this.cardDomList = this.$refs.cardList
+          if (!this.vw) {
+            this.vw = window.innerWidth
+          }
+        })
+      }
     }
   },
-  components: { BaseScroll, CardFixed, LoadingBall }
+  components: {
+    BaseScroll,
+    LoadingBall,
+    TextCard,
+    MusicCard,
+    TopicCard
+  }
 }
 </script>
 <style lang='stylus' scoped>

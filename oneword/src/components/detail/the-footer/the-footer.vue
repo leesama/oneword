@@ -43,7 +43,7 @@ export default {
       if (i === this.selectTab) {
         return
       }
-      // css切换之后再进行动画,这里如果在切换的css使用animation，第一个元素初次加载也会显示动画，设定中初次加载第一个元素不显示动画,直接操作dom
+      // css切换之后再进行动画,这里如果在切换的css上添加animation，第一个元素初次加载也会显示动画，设定中初次加载第一个元素不显示动画,直接操作dom
       const icon = this.$refs.icons[i].$el.children[0]
       this.selectTab = i
 

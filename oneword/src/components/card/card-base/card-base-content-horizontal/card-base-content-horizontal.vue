@@ -68,10 +68,12 @@ export default {
 .center
   text-align center
 .noimg
-  margin-bottom 200px
+  margin-top -150px
+  margin-bottom 150px
 .notitle
   padding-top 50px
 .notitleimg
   padding-top 50px
-  margin-bottom 300px
+  margin-top -150px
+  margin-bottom 150px
 </style>

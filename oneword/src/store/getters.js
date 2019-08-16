@@ -1,7 +1,9 @@
 const getters = {
-  showHttpError: state => state.common.isShowHttpError,
-  cardWidth: state => state.dom.cardWidth,
-  vw: state => state.dom.vw
+  errorLoadingVisible: state => state.common.errorLoadingVisible,
+  musicSrc: state => state.music.musicSrc,
+  imgSrc: state => state.music.imgSrc,
+  playing: state => state.music.playing,
+  progress: state => state.music.progress
 }
 
 export default getters

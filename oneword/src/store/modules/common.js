@@ -1,20 +1,17 @@
 /*
  * @Author: leecho
  * @since: 2019-08-08 11:22:59
- * @lastTime: 2019-08-11 13:34:46
+ * @lastTime: 2019-08-14 23:49:57
  * @LastAuthor: leecho
  * @message:存储通用数据
  */
 
-import types from '../mutation-types'
+import * as types from '../mutation-types'
 const common = {
-  state: { isShowHttpError: false },
+  state: { errorLoadingVisible: false },
   mutations: {
-    [types.SHOW_HTTP_ERROR] (state) {
-      state.isShowHttpError = true
-    },
-    [types.NOT_SHOW_HTTP_ERROR] (state) {
-      state.isShowHttpError = false
+    [types.SET_ERROR_VISIBLE] (state, visible) {
+      state.errorLoadingVisible = visible
     }
   }
 }

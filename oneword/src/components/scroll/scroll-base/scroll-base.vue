@@ -24,7 +24,7 @@ export default {
      */
     click: {
       type: Boolean,
-      default: true
+      default: false
     },
     /**
      * 是否开启横向滚动
@@ -71,7 +71,7 @@ export default {
     /**
      * 是否派发右侧拉动的事件，用于右拉加载
      */
-    rightsilp: {
+    rightSlip: {
       type: Boolean,
       default: false
     },
@@ -111,7 +111,7 @@ export default {
         return {}
       }
     },
-    leftSilp: {
+    leftSlip: {
       type: Boolean,
       default: false
     },
@@ -125,7 +125,7 @@ export default {
     this._initScroll()
   },
   // beforeDestroy () {
-  //   this.bs.destroy()
+  //   this.destroy()
   // },
   methods: {
     _initScroll () {
@@ -136,13 +136,13 @@ export default {
       this.scroll = new BScroll(this.$refs.wrapper, {
         startX: this.startX,
         probeType: this.probeType,
-        click: this.click,
         scrollX: this.scrollX,
         useTransition: false,
-        tap: 'tap',
+        click: this.click,
         scrollY: this.scrollY,
         bounce: this.bounce,
         bounceTime: 1500,
+        tap: 'tap',
         momentum: this.momentum
       })
 
@@ -152,8 +152,8 @@ export default {
           this.$emit('scroll', pos)
         })
       }
-      // 是否派发滚动到右侧事件，用于右滑加载
-      if (this.leftSilp) {
+      // 是否派发滚动到左侧事件，用于右滑加载
+      if (this.leftSlip) {
         this.watching = false
         this.watch = function () {
           // watching是pullingUp 事件的标识，如果wathching有值，说明还在监听pullingup事件中，直接返回
@@ -167,14 +167,14 @@ export default {
         const check = function (pos) {
           if (
             this.scroll.movingDirectionX === 1 &&
-            pos.x <= this.scroll.maxScrollX + 50
+            pos.x <= this.scroll.maxScrollX + 20
           ) {
-            // 滚动结束后修改触发标识，不再监听pullingup事件，ps:不再监听pullingup事件之后才再次监听 这里不直接在scrollEnd后再次监听事件是因为触发pullingUp后，会执行异步操作，执行leftSilpfinish后再次触发
+            // 滚动结束后修改触发标识，不再监听pullingup事件，ps:不再监听pullingup事件之后才再次监听 这里不直接在scrollEnd后再次监听事件是因为触发pullingUp后，会执行异步操作，执行leftSlipfinish后再次触发
             this.scroll.once('scrollEnd', watching => {
               this.watching = false
             })
             // 触发下拉事件
-            this.$emit('leftSilp')
+            this.$emit('leftSlip')
             // 不再执行scroll触发的check方法，也就是说之后不会再触发pullingUp
             this.scroll.off('scroll', check)
           }
@@ -187,7 +187,7 @@ export default {
         //   if (this.scroll.x < 0) {
         //     if (this.scroll.x <= this.scroll.maxScrollX + 50) {
         //       console.log(this.scroll.x, this.scroll.maxScrollX, 22)
-        //       this.$emit('rightsilp')
+        //       this.$emit('rightSlip')
         //     }
         //   }
         // })
@@ -246,19 +246,27 @@ export default {
     isEnabled () {
       return this.scroll.enabled
     },
+    destroy () {
+      this.scroll && this.scroll.destroy()
+    },
     refresh () {
       // 代理better-scroll的refresh方法
+
       this.scroll && this.scroll.refresh()
     },
     scrollTo () {
       // 代理better-scroll的scrollTo方法
       this.scroll && this.scroll.scrollTo.apply(this.scroll, arguments)
     },
+    scrollBy () {
+      // 代理better-scroll的scrollTo方法
+      this.scroll && this.scroll.scrollBy.apply(this.scroll, arguments)
+    },
     scrollToElement () {
       // 代理better-scroll的scrollToElement方法
       this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
     },
-    leftSilpfinish () {
+    leftSlipfinish () {
       // 在事件中的话，一旦结束，就再次监听事件，如果没有在事件中，直接监听事件，
       if (this.watching) {
         this.scroll.once('scrollEnd', this.watch, this)

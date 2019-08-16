@@ -8,12 +8,14 @@
         <i class="iconfont icon-fanhui"></i>
       </template>
     </the-header>
-    <scroll-x :data="list" @refresh="loadData" />
+    <scroll-x :data="list" @refresh="loadData" @leftSlip="loadLeftSlipData" />
+    <music-player />
     <the-footer />
   </div>
 </template>
 
 <script>
+import MusicPlayer from '@components/music/music-player/music-player'
 import TheHeader from '@components/detail/the-header/the-header'
 import TheFooter from '@components/detail/the-footer/the-footer.vue'
 import ScrollX from '@components/scroll/scroll-x/scroll-x'
@@ -58,19 +60,27 @@ export default {
           day: itime.substr(8, 2)
         }
       }
-      return newData.slice(0, 3)
+      return newData
     },
     async loadData () {
       const data = await getfeeds()
-      this.list = this.formatFeedData(data)
+      this.list = this.formatFeedData(data).slice(0, 3)
+      this.day = 3
+    },
+    async loadLeftSlipData () {
+      const data = await getfeeds()
+      this.list = this.list.concat(
+        this.formatFeedData(data).slice(this.day, this.day + 1)
+      )
+      this.day += 1
     }
   },
-  components: { TheHeader, TheFooter, ScrollX }
+  components: { TheHeader, TheFooter, ScrollX, MusicPlayer }
 }
 </script>
 <style lang='stylus' scoped>
 .home-content
-  background-color #efefef
+  background linear-gradient(to bottom, #efefef, #dedede)
   position absolute
   height 100%
   width 100%

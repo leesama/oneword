@@ -11,7 +11,7 @@ const baseUrl = urlMap[process.env.NODE_ENV]
  */
 function get (url) {
   return function (params = {}) {
-    store.dispatch('notShowHttpError')
+    store.dispatch('setErrorVisible', false)
     return axios
       .get(`${baseUrl}${url}`, { params, timeout: 3000 })
       .then(res => {
@@ -21,9 +21,9 @@ function get (url) {
         }
       })
       .catch(e => {
-        store.dispatch('showHttpError')
+        store.dispatch('setErrorVisible', true)
         setTimeout(() => {
-          store.dispatch('notShowHttpError')
+          store.dispatch('setErrorVisible', false)
         }, 2000)
       })
   }

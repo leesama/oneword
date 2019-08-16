@@ -6,7 +6,7 @@
         <span v-html="content"></span>
       </p>
     </div>
-    <card-from :from="from" ref="dsda" v-if="from" />
+    <card-from :from="from" v-if="from" />
   </div>
 </template>
 
@@ -25,12 +25,6 @@ export default {
       ]
     }
   },
-  // mounted () {
-  //   console.log(
-  //     this.$refs.dsda.$el.getBoundingClientRect().top,
-  //     this.$refs.dsda.$el
-  //   )
-  // },
   components: { CardFrom }
 }
 </script>
@@ -66,7 +60,7 @@ export default {
         font-size 50px
         height 100%
       &:before
-        margin-left 50px
+        margin-left 7px
         display inline-block
         content ''
         width 20px
@@ -95,6 +89,4 @@ export default {
   .imgradius
     margin-top -30px
     margin-bottom 30px
-.notitle
-  // padding-top 61px
 </style>

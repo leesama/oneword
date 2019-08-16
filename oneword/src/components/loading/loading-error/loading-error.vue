@@ -1,5 +1,5 @@
 <template>
-  <div v-show="showHttpError">Sorry,请重试:(</div>
+  <div v-show="errorLoadingVisible">Sorry,请重试:(</div>
 </template>
 
 <script>
@@ -8,7 +8,7 @@ export default {
   name: 'loading-error',
   computed: mapGetters([
     // 映射 this.count 为 store.state.count
-    'showHttpError'
+    'errorLoadingVisible'
   ])
 }
 </script>
