@@ -5,12 +5,11 @@
         <span>订阅</span>
       </template>
       <template #right>
-        <i class="iconfont icon-fanhui"></i>
+        <router-link tag="i" to="/crosstime" class="iconfont icon-fanhui"></router-link>
       </template>
     </the-header>
     <scroll-x :data="list" @refresh="loadData" @leftSlip="loadLeftSlipData" />
     <music-player />
-    <the-footer />
   </div>
 </template>
 
@@ -18,7 +17,6 @@
 import { formatFeedData } from '@js/utils.js'
 import MusicPlayer from '@components/music/music-player/music-player'
 import TheHeader from '@components/detail/the-header/the-header'
-import TheFooter from '@components/detail/the-footer/the-footer.vue'
 import ScrollX from '@components/scroll/scroll-x/scroll-x'
 import { getfeeds } from '@models'
 export default {
@@ -45,7 +43,7 @@ export default {
       this.day += 1
     }
   },
-  components: { TheHeader, TheFooter, ScrollX, MusicPlayer }
+  components: { TheHeader, ScrollX, MusicPlayer }
 }
 </script>
 <style lang='stylus' scoped>
@@ -53,17 +51,15 @@ export default {
   background linear-gradient(to bottom, #efefef, #dedede)
   position absolute
   height 100%
+  box-sizing border-box
+  padding-bottom 130px
   width 100%
   display flex
   flex-direction column
   overflow hidden
-  span
-    font-size 60px
-    font-family FZQingKeBenYueSongS-R-GB
   i
     position absolute
     right 0
     top 0
     font-size 100px
-    font-weight bold
 </style>

@@ -25,7 +25,7 @@ export default {
       tab: [
         { tabTo: '/', tabIcon: 'icon-home' },
         { tabTo: '/', tabIcon: 'icon-sousuo' },
-        { tabTo: '/', tabIcon: 'icon-message' },
+        { tabTo: '/message', tabIcon: 'icon-message' },
         { tabTo: '/', tabIcon: 'icon-wode' }
       ],
       selectTab: 0
@@ -68,6 +68,10 @@ i
   &:last-child i
     font-size 110px
 .wrapper
+  position fixed
+  bottom 0
+  left 0
+  right 0
   display flex
   height 145px
   background-color rgba(242, 242, 242, 0.7)
