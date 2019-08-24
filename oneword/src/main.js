@@ -14,7 +14,6 @@ import VueLazyload from 'vue-lazyload'
 Vue.use(VueLazyload)
 
 Vue.use(ErrorPlugin)
-
 Vue.prototype.$anime = anime
 Vue.config.productionTip = false
 new Vue({

@@ -23,16 +23,6 @@ const cardFixedPropsMethods = {
       }
     }
   },
-  methods: {
-    /**
-     * @description: scroll touchend的时候调用此方法，传递滚动信息给scroll组件
-     * @param {type}
-     * @return:
-     */
-    cardToClientLeft () {
-      return this.$refs.card.getBoundingClientRect().left
-    }
-  },
   computed: {
     from () {
       return this.cardInfo.from

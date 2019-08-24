@@ -9,13 +9,12 @@
       </template>
     </the-header>
     <scroll-x :data="list" @refresh="loadData" @leftSlip="loadLeftSlipData" />
-    <music-player />
   </div>
 </template>
 
 <script>
 import { formatFeedData } from '@js/utils.js'
-import MusicPlayer from '@components/music/music-player/music-player'
+
 import TheHeader from '@components/detail/the-header/the-header'
 import ScrollX from '@components/scroll/scroll-x/scroll-x'
 import { getfeeds } from '@models'
@@ -43,7 +42,7 @@ export default {
       this.day += 1
     }
   },
-  components: { TheHeader, ScrollX, MusicPlayer }
+  components: { TheHeader, ScrollX }
 }
 </script>
 <style lang='stylus' scoped>
@@ -52,7 +51,7 @@ export default {
   position absolute
   height 100%
   box-sizing border-box
-  padding-bottom 130px
+  padding-bottom 145px
   width 100%
   display flex
   flex-direction column

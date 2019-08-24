@@ -17,8 +17,9 @@ export default {
   },
   watch: {
     musicSrc () {
+      const audio = this.$refs.audio
       this.$nextTick(() => {
-        this.$refs.audio.play()
+        audio.play()
         this.rotateBack()
         this.rotateVal = 0
         this.rotate()
@@ -58,6 +59,7 @@ export default {
 <style lang='stylus' scoped>
 @import '~@common/stylus/mixins.styl'
 .rotating
+  z-index 99999
   center()
   bottom 180px
   right 30px

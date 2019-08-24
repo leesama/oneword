@@ -1,5 +1,6 @@
 <template>
   <base-scroll
+    :observeDom="false"
     :startX="90"
     :probeType="3"
     :listenScroll="true"
@@ -140,7 +141,7 @@ export default {
             // 把this.scrollBeginTime null作为标记,防止多次触发
             this.scrollBeginTime = null
             this.baseScroll.disable()
-            this.animateByScroll(scrollX)
+            this.animateByScroll(60)
             this.baseScroll.scrollTo(90, 0, 500)
             this.$emit('refresh')
             return
@@ -176,37 +177,33 @@ export default {
       if (x < 0) {
         const offsetX = x - this.scrollStartX
         const time = new Date().getTime() - this.scrollBeginTime
-        const cardlist = this.cardDomList
-        // 最多可以滚动12个card
-        const rate = this.vw / 10
-
-        if (time < 300 && offsetX > 20) {
+        if (time < 300 && offsetX > 0) {
           // 右滑动
-          const scrollN = this.cardIndex - Math.ceil(offsetX / rate) + 1
-          this.cardIndex = scrollN <= 0 ? 0 : scrollN
+          const scrollN = this.cardIndex - Math.ceil(offsetX / (this.vw / 10))
+          this.cardIndex = scrollN < 0 ? 0 : scrollN
           this.scrollToCardByIndex(this.cardIndex, 1000)
-        } else if (time < 300 && offsetX < -20) {
+        } else if (time < 300 && offsetX < 0) {
           // 左滑动
           // 要滚动到的card在cardlist中对应的索引
-          const scrollN = this.cardIndex - Math.ceil(offsetX / rate)
-          const cardMaxIndex = cardlist.length - 1
-          this.cardIndex = scrollN >= cardMaxIndex ? cardMaxIndex : scrollN
+          const scrollN =
+            this.cardIndex - Math.ceil(offsetX / (this.vw / 10)) + 1
+          this.cardIndex =
+            scrollN > this.cardMaxIndex ? this.cardMaxIndex : scrollN
           this.scrollToCardByIndex(this.cardIndex, 1000)
+        } else if (offsetX > this.vw / 4) {
+          // 右拖动
+          const scrollN = this.cardIndex - 1
+          this.cardIndex = scrollN < 0 ? 0 : scrollN
+          this.scrollToCardByIndex(this.cardIndex)
+        } else if (offsetX < -this.vw / 4) {
+          // 左拖动
+          const scrollN = this.cardIndex + 1
+          this.cardIndex =
+            scrollN > this.cardMaxIndex ? this.cardMaxIndex : scrollN
+          this.scrollToCardByIndex(this.cardIndex)
         } else {
-          for (let i = 0; i < cardlist.length; i++) {
-            const cardToClientLeft = cardlist[i].cardToClientLeft()
-
-            if (cardToClientLeft > 0 && cardToClientLeft <= this.vw / 2) {
-              this.cardIndex = i
-              this.scrollToCardByIndex(i)
-              return
-            }
-            if (cardToClientLeft > this.vw / 2 && cardToClientLeft <= this.vw) {
-              this.cardIndex = i
-              this.scrollToCardByIndex(i - 1)
-              return
-            }
-          }
+          // 其他情况滚动回原位置
+          this.scrollToCardByIndex(this.cardIndex)
         }
       }
       // 触发刷新事件
@@ -223,33 +220,48 @@ export default {
     animateByScroll (val) {
       // 小于5不执行动画，是为了防止执行动画时dom还没有缓存好而报错，给一定的缓冲时间
 
-      if (val > scrollX || val < 5) {
-        return
-      }
       this.items.forEach((item, index) => {
-        const rate = val / scrollX
+        const rate = val / (40 + (this.list[index][2] / 13) * 20)
+        // 动画的项需要移动的x轴距离
         const x = animationX + this.list[index][4]
+        // 动画的项需要移动的y轴距离
         const y =
           this.list[index][2] * this.itemHeight -
           index * this.itemHeight -
           this.list[index][3]
         const rotate = this.list[index][1]
         const opacity = 0.9
-
-        this.$anime.set(item, {
-          translateX () {
-            return x * rate
-          },
-          translateY () {
-            return y * rate
-          },
-          rotate () {
-            return rotate * rate
-          },
-          opacity () {
-            return opacity * rate
-          }
-        })
+        if (x * rate <= x) {
+          this.$anime.set(item, {
+            translateX () {
+              return x * rate
+            },
+            translateY () {
+              return y * rate
+            },
+            rotate () {
+              return rotate * rate
+            },
+            opacity () {
+              return opacity * rate
+            }
+          })
+        } else {
+          this.$anime.set(item, {
+            translateX () {
+              return x
+            },
+            translateY () {
+              return y
+            },
+            rotate () {
+              return rotate
+            },
+            opacity () {
+              return opacity
+            }
+          })
+        }
       })
     },
     // 固定的滚动距离
@@ -280,6 +292,7 @@ export default {
       if (this.loadingBallVisible) {
         this.$nextTick(() => {
           this.cardDomList = this.$refs.cardList
+          this.cardMaxIndex = this.cardDomList.length - 1
           this.baseScroll.leftSlipfinish()
           setTimeout(() => {
             this.baseScroll.refresh()
@@ -291,6 +304,7 @@ export default {
         this.dataChanged = true
         this.$nextTick(() => {
           this.cardDomList = this.$refs.cardList
+          this.cardMaxIndex = this.cardDomList.length - 1
           if (!this.vw) {
             this.vw = window.innerWidth
           }
@@ -311,6 +325,7 @@ export default {
 .scroll-content
   display inline-flex
   align-items center
+  height 100%
 ul
   width 200px
   margin-left -200px

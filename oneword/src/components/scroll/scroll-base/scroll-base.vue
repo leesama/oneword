@@ -6,7 +6,6 @@
 
 <script>
 import BScroll from '@better-scroll/core'
-
 export default {
   name: 'scroll-base',
   props: {
@@ -24,7 +23,7 @@ export default {
      */
     click: {
       type: Boolean,
-      default: false
+      default: true
     },
     /**
      * 是否开启横向滚动
@@ -117,7 +116,7 @@ export default {
     },
     momentum: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
   mounted () {
@@ -145,7 +144,6 @@ export default {
         tap: 'tap',
         momentum: this.momentum
       })
-
       // 是否派发滚动事件
       if (this.listenScroll) {
         this.scroll.on('scroll', pos => {
@@ -181,16 +179,6 @@ export default {
         }
 
         this.watch()
-
-        // this.scroll.on('scrollEnd', () => {
-        //   // 滚动到底部
-        //   if (this.scroll.x < 0) {
-        //     if (this.scroll.x <= this.scroll.maxScrollX + 50) {
-        //       console.log(this.scroll.x, this.scroll.maxScrollX, 22)
-        //       this.$emit('rightSlip')
-        //     }
-        //   }
-        // })
       }
       // 上滑事件
       // if (this.pullup) {
@@ -287,10 +275,6 @@ export default {
 </script>
 <style lang='stylus' scoped>
 .scroll-wrapper
-  // margin-left 100px
-  flex 1
-  white-space nowrap
+  height 100%
   overflow hidden
-  display flex
-  align-items center
 </style>

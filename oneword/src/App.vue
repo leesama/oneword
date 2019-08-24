@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" @touchmove.prevent>
     <transition :name="transitionName">
       <keep-alive>
         <router-view />
@@ -7,10 +7,12 @@
     </transition>
     <the-footer />
     <loading-error></loading-error>
+    <music-player />
     <loading-font v-if="LoadingShow"></loading-font>
   </div>
 </template>
 <script>
+import MusicPlayer from '@components/music/music-player/music-player'
 import LoadingError from '@components/loading/loading-error/loading-error.vue'
 import LoadingFont from '@components/loading/loading-font/loading-font'
 import TheFooter from '@components/detail/the-footer/the-footer'
@@ -67,7 +69,7 @@ export default {
   },
   watch: {
     $route (to, from) {
-      if (to.path === '/crosstime') {
+      if (to.path === '/crosstime' && from.path === '/home') {
         this.transitionName = 'hometocrosstime'
       } else if (to.path === '/home' && from.path === '/crosstime') {
         this.transitionName = 'crosstimetohome'
@@ -76,7 +78,7 @@ export default {
       }
     }
   },
-  components: { LoadingFont, LoadingError, TheFooter }
+  components: { LoadingFont, LoadingError, TheFooter, MusicPlayer }
 }
 </script>
 <style lang="stylus">

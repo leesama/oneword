@@ -1,7 +1,7 @@
 import axios from 'axios'
 import store from '@store'
 const urlMap = {
-  development: 'http://192.168.0.100:8080',
+  development: 'http://192.168.0.103:8080',
   production: '/'
 }
 const baseUrl = urlMap[process.env.NODE_ENV]
