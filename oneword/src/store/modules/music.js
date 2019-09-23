@@ -1,30 +1,35 @@
-/*
- * @Author: leecho
- * @since: 2019-08-10 23:24:56
- * @lastTime: 2019-08-16 22:39:40
- * @LastAuthor: leecho
- * @message: 存储与music组件有关的数据
- */
 import * as types from '../mutation-types'
 const music = {
   state: {
     musicSrc: '',
     imgSrc: '',
     playing: false,
-    progress: 0
+    duration: '',
+    currentTime: '0:00',
+    progress: 0,
+    musicInfo: {}
   },
   mutations: {
-    [types.SET_MUSIC_SRC] (state, musicSrc) {
+    [types.SET_MUSIC_SRC](state, musicSrc) {
       state.musicSrc = musicSrc
     },
-    [types.SET_IMG_SRC] (state, imgSrc) {
+    [types.SET_IMG_SRC](state, imgSrc) {
       state.imgSrc = imgSrc
     },
-    [types.SET_PLAYING_STATE] (state, playing) {
+    [types.SET_PLAYING_STATE](state, playing) {
       state.playing = playing
     },
-    [types.SET_PROGRESS] (state, progress) {
+    [types.SET_PROGRESS](state, progress) {
       state.progress = progress
+    },
+    [types.SET_DURATION](state, duration) {
+      state.duration = duration
+    },
+    [types.SET_CURRENTTIME](state, currentTime) {
+      state.currentTime = currentTime
+    },
+    [types.SET_MUSIC_INFO](state, musicInfo) {
+      state.musicInfo = musicInfo
     }
   }
 }

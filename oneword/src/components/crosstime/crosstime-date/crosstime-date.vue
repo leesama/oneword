@@ -1,5 +1,5 @@
 <template>
-  <scroll :scrollY="true" class="scroll" ref="scroll">
+  <scroll :scrollY="true" class="scroll" ref="scroll" tap="tap">
     <div class="card-container">
       <a
         @tap="handleClick(item)"
@@ -10,7 +10,7 @@
       >
         <p>
           <span>{{item.year}}</span>
-          <span>{{item.month}}</span>
+          <span>{{item.month}}月</span>
           <span>{{item.day}}</span>
         </p>
         <p>{{item.date}}</p>
@@ -27,19 +27,19 @@ const date = new Date()
 const thisMonth = { year: date.getFullYear(), month: date.getMonth() + 1 }
 export default {
   name: 'crosstime-date',
-  data () {
+  data() {
     return { clickedCard: {} }
   },
   props: {
     date: {
       type: Object,
-      default () {
+      default() {
         return {}
       }
     }
   },
   computed: {
-    dateArray () {
+    dateArray() {
       if (
         JSON.stringify(this.date) === '{}' ||
         JSON.stringify(this.date) === JSON.stringify(thisMonth)
@@ -51,26 +51,26 @@ export default {
         return this.getDates(this.date)
       }
     },
-    clickedCardObjectKeyName () {
+    clickedCardObjectKeyName() {
       return JSON.stringify(this.date) === '{}'
         ? JSON.stringify(thisMonth)
         : JSON.stringify(this.date)
     }
   },
-  created () {
+  created() {
     if (localStorage.getItem('cardClicked')) {
       this.clickedCard = JSON.parse(localStorage.getItem('cardClicked'))
     }
   },
   methods: {
-    clickedClassVisible (item) {
+    clickedClassVisible(item) {
       if (!this.clickedCard[this.clickedCardObjectKeyName]) {
         return false
       } else {
         return this.checkIfCardKeyExist(item)
       }
     },
-    handleClick (item) {
+    handleClick(item) {
       if (!this.clickedCard[this.clickedCardObjectKeyName]) {
         this.$set(this.clickedCard, this.clickedCardObjectKeyName, [])
         if (!this.checkIfCardKeyExist(item)) {
@@ -79,19 +79,26 @@ export default {
       } else {
         this.pushKey(item)
       }
-      this.$router.push({ path: '/crosstimeDetail', query: item })
+      this.$router.push({
+        path: '/crosstime',
+        params: {
+          datetime: `${item.year}-${
+            item.month.length === 1 ? `0${item.month}` : item.month
+          }-${item.date} 00:00:00 `
+        }
+      })
     },
-    checkIfCardKeyExist (item) {
+    checkIfCardKeyExist(item) {
       return this.clickedCard[this.clickedCardObjectKeyName].includes(
         JSON.stringify(item)
       )
     },
-    pushKey (item) {
+    pushKey(item) {
       this.clickedCard[this.clickedCardObjectKeyName].push(JSON.stringify(item))
       localStorage.setItem('cardClicked', JSON.stringify(this.clickedCard))
     },
 
-    getDates ({ year, month }) {
+    getDates({ year, month }) {
       let dayArry = []
       let day = new Date(year, month, 0).getDate()
       for (let k = day; k >= 1; k--) {
@@ -99,7 +106,7 @@ export default {
       }
       return dayArry
     },
-    getThisMonthDates () {
+    getThisMonthDates() {
       let dayArry = []
       for (let k = date.getDate(); k >= 1; k--) {
         dayArry.push(this.formatDate(thisMonth, k))
@@ -107,14 +114,14 @@ export default {
 
       return dayArry
     },
-    formatDate ({ year, month }, date) {
+    formatDate({ year, month }, date) {
       let day = `星期${'日一二三四五六'.charAt(
         new Date(year, month, date).getDay()
       )}`
-      month = `${month}月`
+      month = `${month}`
       return { ...{ year, month }, day: day, date: date }
     },
-    refreshDom () {
+    refreshDom() {
       this.$nextTick(() => {
         this.$refs.scroll.refresh()
       })

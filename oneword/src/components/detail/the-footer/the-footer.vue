@@ -1,5 +1,5 @@
 <template>
-  <footer class="wrapper border-top">
+  <footer class="detail-footer border-top">
     <router-link
       ref="icons"
       :key="index"
@@ -20,26 +20,26 @@
 <script>
 export default {
   name: 'the-footer',
-  data () {
+  data() {
     return {
       tab: [
         { tabTo: '/', tabIcon: 'icon-home' },
-        { tabTo: '/', tabIcon: 'icon-sousuo' },
+        { tabTo: '/explore', tabIcon: 'icon-sousuo' },
         { tabTo: '/message', tabIcon: 'icon-message' },
         { tabTo: '/', tabIcon: 'icon-wode' }
       ],
       selectTab: 0
     }
   },
-  mounted () {},
+  mounted() {},
   methods: {
     // 计算图标classname，点击后的图标名称为原图标+click
-    calIconClass (i) {
+    calIconClass(i) {
       return i === this.selectTab
         ? `${this.tab[i].tabIcon}click`
         : this.tab[i].tabIcon
     },
-    handleTabClick (i) {
+    handleTabClick(i) {
       if (i === this.selectTab) {
         return
       }
@@ -67,14 +67,13 @@ i
   center()
   &:last-child i
     font-size 110px
-.wrapper
+.detail-footer
   position fixed
   bottom 0
   left 0
   right 0
   display flex
   height 145px
-  background-color rgba(242, 242, 242, 0.7)
-  // box-shadow 2px 2px 5px #333333
+  background-color rgba(242, 242, 242, 0.9)
   box-shadow '0px' '2px' '5px' '5px' #dddddd
 </style>

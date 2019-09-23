@@ -1,53 +1,72 @@
 <template>
-  <div class="crosstime">
-    <the-header>
-      <template #left>
-        <router-link tag="i" class="iconfont" to="/">&#xe612;</router-link>
-      </template>
-      <template #mid>
-        <span>穿越</span>
-      </template>
-    </the-header>
-    <div class="main">
-      <crosstime-month @monthChange="handleMonthChange" />
-      <crosstime-date :date="date" />
-    </div>
+  <div class="crosstime-container">
+    <header>
+      <the-header>
+        <template #left>
+          <router-link tag="i" class="iconfont" to="/choose-crosstime">&#xe612;</router-link>
+        </template>
+        <template #mid>
+          <span>穿越</span>
+        </template>
+      </the-header>
+    </header>
+    <scroll-x
+      ref="scroll"
+      class="crosstime-scroll"
+      :data="list"
+      @refresh="loadData"
+      @leftSlip="loadLeftSlipData"
+      @cardTap="handleCardTap"
+      :containerCardIndex="containerCardIndex"
+    />
+    <card-container
+      @back="handleBack"
+      cardClassName=".crosstime-scroll .card-container"
+      scrollContentClassName=".crosstime-scroll .scroll-content"
+      :cardContainerData="cardContainerData"
+      :cardTapCardData="cardTapCardData"
+      v-if="cardContainerVisible"
+    ></card-container>
   </div>
 </template>
 
 <script>
-import CrosstimeMonth from '@components/crosstime/crosstime-month/crosstime-month.vue'
-import CrosstimeDate from '@components/crosstime/crosstime-date/crosstime-date.vue'
+import CardContainer from '@components/card-detail/card-detail-container/card-detail-container'
+import { formatTo1Level } from '@js/utils.js'
 import TheHeader from '@components/detail/the-header/the-header.vue'
-
+import ScrollX from '@components/scroll/scroll-x/scroll-x'
+import { getCards } from '@models'
+import { pageCommon } from '@mixins'
 export default {
   name: 'crosstime',
-  data () {
-    return {
-      date: {}
-    }
+  mixins: [pageCommon],
+  created() {
+    this.loadData()
   },
   methods: {
-    handleMonthChange (date) {
-      this.date = date
+    async loadData() {
+      this.list = (await getCards()).slice(0, 3)
+      this.cardContainerData = formatTo1Level(this.list)
+      this.day = 3
+    },
+    async loadLeftSlipData() {
+      const nextDay = this.day + 3
+      this.list = this.list.concat((await getCards()).slice(this.day, nextDay))
+      this.cardContainerData = formatTo1Level(this.list)
+      this.day = nextDay
     }
   },
-  components: { CrosstimeMonth, CrosstimeDate, TheHeader }
+  components: { TheHeader, ScrollX, CardContainer }
 }
 </script>
 <style lang='stylus' scoped>
-.crosstime
+@import '~@common/stylus/mixins.styl'
+.crosstime-container
+  position absolute
   background linear-gradient(to bottom, #f0f0f0, #dddddd)
-  z-index 100
-  position fixed
+  filled()
   display flex
   flex-direction column
-  top 0
-  left 0
-  right 0
-  bottom 0
-  height 100%
-  .main
-    flex 1
-    display flex
+  header
+    height 130px
 </style>

@@ -6,6 +6,10 @@
 
 <script>
 import BScroll from '@better-scroll/core'
+import ScrollBar from '@better-scroll/scroll-bar'
+import Pullup from '@better-scroll/pull-up'
+BScroll.use(ScrollBar)
+BScroll.use(Pullup)
 export default {
   name: 'scroll-base',
   props: {
@@ -14,9 +18,23 @@ export default {
      * 2 滚动的时候实时派发scroll事件，不会截流。
      * 3 除了实时派发scroll事件，在swipe的情况下仍然能实时派发scroll事件
      */
+    preventDefaultException: {
+      type: Object,
+      default() {
+        return {}
+      }
+    },
     probeType: {
       type: Number,
       default: 1
+    },
+    stopPropagation: {
+      type: Boolean,
+      default: false
+    },
+    tap: {
+      type: String,
+      default: ''
     },
     /**
      * 点击列表是否派发click事件
@@ -52,13 +70,6 @@ export default {
     data: {
       type: Array,
       default: null
-    },
-    /**
-     * 是否派发滚动到底部的事件，用于上拉加载
-     */
-    pullup: {
-      type: Boolean,
-      default: false
     },
     /**
      * 是否派发顶部下拉的事件，用于下拉刷新
@@ -104,9 +115,13 @@ export default {
       type: Number,
       default: 0
     },
+    startY: {
+      type: Number,
+      default: 0
+    },
     bounce: {
       type: Object,
-      default () {
+      default() {
         return {}
       }
     },
@@ -117,9 +132,35 @@ export default {
     momentum: {
       type: Boolean,
       default: true
+    },
+    bounceTime: {
+      type: Number,
+      default: 800
+    },
+    tagException: {
+      type: Object,
+      default() {
+        return {}
+      }
+    },
+    scrollBar: {
+      type: Boolean,
+      default: false
+    },
+    pullUpLoad: {
+      type: Boolean,
+      default: false
+    },
+    directionLockThreshold: {
+      type: Number,
+      default: 5
+    },
+    momentumLimitDistance: {
+      type: Number,
+      default: 15
     }
   },
-  mounted () {
+  mounted() {
     // 保证在DOM渲染完毕后初始化better-scroll
     this._initScroll()
   },
@@ -127,22 +168,30 @@ export default {
   //   this.destroy()
   // },
   methods: {
-    _initScroll () {
+    _initScroll() {
       if (!this.$refs.wrapper) {
         return
       }
       // better-scroll的初始化
       this.scroll = new BScroll(this.$refs.wrapper, {
+        tagException: this.tagException,
         startX: this.startX,
+        startY: this.startY,
         probeType: this.probeType,
         scrollX: this.scrollX,
         useTransition: false,
         click: this.click,
         scrollY: this.scrollY,
         bounce: this.bounce,
-        bounceTime: 1500,
-        tap: 'tap',
-        momentum: this.momentum
+        bounceTime: this.bounceTime,
+        tap: this.tap,
+        stopPropagation: this.stopPropagation,
+        momentum: this.momentum,
+        momentumLimitDistance: this.momentumLimitDistance,
+        preventDefaultException: this.preventDefaultException,
+        scrollbar: this.scrollBar,
+        pullUpLoad: this.pullUpLoad,
+        directionLockThreshold: this.directionLockThreshold
       })
       // 是否派发滚动事件
       if (this.listenScroll) {
@@ -153,7 +202,7 @@ export default {
       // 是否派发滚动到左侧事件，用于右滑加载
       if (this.leftSlip) {
         this.watching = false
-        this.watch = function () {
+        this.watch = function() {
           // watching是pullingUp 事件的标识，如果wathching有值，说明还在监听pullingup事件中，直接返回
           if (this.watching) {
             return
@@ -162,7 +211,7 @@ export default {
           this.watching = true
           this.scroll.on('scroll', check, this)
         }
-        const check = function (pos) {
+        const check = function(pos) {
           if (
             this.scroll.movingDirectionX === 1 &&
             pos.x <= this.scroll.maxScrollX + 20
@@ -180,16 +229,12 @@ export default {
 
         this.watch()
       }
-      // 上滑事件
-      // if (this.pullup) {
-      //   this.scroll.on('scrollEnd', () => {
-      //     // 滚动到底部
-      //     if (this.scroll.y <= this.scroll.maxScrollY + 50) {
-      //       console.log(22)
-      //       this.$emit('scrollToEnd')
-      //     }
-      //   })
-      // }
+      // 是否派发滚动到底部事件，用于上拉加载
+      if (this.pullUpLoad) {
+        this.scroll.on('pullingUp', () => {
+          this.$emit('pullingUp')
+        })
+      }
       // 是否派发顶部下拉事件，用于下拉刷新
       if (this.pulldown) {
         this.scroll.on('touchend', pos => {
@@ -219,42 +264,42 @@ export default {
         })
       }
     },
-    stop () {
+    stop() {
       // 代理better-scroll的stop方法
       this.scroll && this.scroll.stop()
     },
-    disable () {
+    disable() {
       // 代理better-scroll的disable方法
       this.scroll && this.scroll.disable()
     },
-    enable () {
+    enable() {
       // 代理better-scroll的enable方法
       this.scroll && this.scroll.enable()
     },
-    isEnabled () {
+    isEnabled() {
       return this.scroll.enabled
     },
-    destroy () {
+    destroy() {
       this.scroll && this.scroll.destroy()
     },
-    refresh () {
+    refresh() {
       // 代理better-scroll的refresh方法
 
       this.scroll && this.scroll.refresh()
     },
-    scrollTo () {
+    scrollTo() {
       // 代理better-scroll的scrollTo方法
       this.scroll && this.scroll.scrollTo.apply(this.scroll, arguments)
     },
-    scrollBy () {
+    scrollBy() {
       // 代理better-scroll的scrollTo方法
       this.scroll && this.scroll.scrollBy.apply(this.scroll, arguments)
     },
-    scrollToElement () {
+    scrollToElement() {
       // 代理better-scroll的scrollToElement方法
       this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
     },
-    leftSlipfinish () {
+    leftSlipfinish() {
       // 在事件中的话，一旦结束，就再次监听事件，如果没有在事件中，直接监听事件，
       if (this.watching) {
         this.scroll.once('scrollEnd', this.watch, this)
@@ -265,7 +310,7 @@ export default {
   },
   watch: {
     // 监听数据的变化，延时refreshDelay时间后调用refresh方法重新计算，保证滚动效果正常
-    data () {
+    data() {
       setTimeout(() => {
         this.refresh()
       }, this.refreshDelay)
@@ -274,7 +319,10 @@ export default {
 }
 </script>
 <style lang='stylus' scoped>
+// 这里加上relative定位，是因为scrollbar是绝对定位的，而我们又有多个scrollbar在同一个页面的情况
 .scroll-wrapper
+  position relative
+  width 100%
   height 100%
   overflow hidden
 </style>

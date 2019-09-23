@@ -1,16 +1,23 @@
 <template>
-  <div class="card" ref="card">
-    <header class="textheader">
-      <card-img :src="imgSrc" :radius="true" />
-    </header>
-    <main>
-      <p>{{title}}</p>
-      <p>{{from}}</p>
-      <music-control :musicSrc="musicSrc" :imgSrc="imgSrc" />
-    </main>
-    <footer>
-      <card-footer :replycnt="replycnt" :collectcnt="collectcnt" :likecnt="likecnt" />
-    </footer>
+  <div class="card-wrapper" ref="card">
+    <div class="card-container">
+      <header class="textheader" @tap="handleTap">
+        <card-img :src="imgSrc" :radius="true" />
+      </header>
+      <main @tap="handleTap">
+        <p>{{title}}</p>
+        <p>{{from}}</p>
+        <music-control :musicSrc="musicSrc" :imgSrc="imgSrc" :cardInfo="cardInfo" />
+      </main>
+      <footer>
+        <card-footer
+          :replycnt="replycnt"
+          :collectcnt="collectcnt"
+          :likecnt="likecnt"
+          @replyClick="handleReplyClick"
+        />
+      </footer>
+    </div>
   </div>
 </template>
 <script>
@@ -19,6 +26,7 @@ import {
   cardFooterComputed,
   CardImgComputed
 } from '@mixins'
+
 import MusicControl from '@components/music/music-player-control/music-player-control'
 import CardImg from '@components/card/card-base/card-base-img/card-base-img'
 import CardFooter from '@components/card/card-base/card-base-footer/card-base-footer'
@@ -30,8 +38,9 @@ export default {
     CardImg,
     MusicControl
   },
+
   computed: {
-    musicSrc () {
+    musicSrc() {
       return this.cardInfo.musicurl
     }
   }
@@ -44,35 +53,38 @@ export default {
     border-color #d3d3d3
   &:after
     border-color #d3d3d3
-.card
-  display flex
-  margin-right 100px
-  box-shadow 0 0 60px 20px #d3d3d3
+.card-wrapper
   width 860px
+  margin-right 100px
   height 1535px
-  background #fefefe
-  display flex
-  flex-direction column
-  header
-    margin-top 146px
-    height 485px
-  main
-    font-family FZZhengHeiS-EL-GB
-    flex 1
-    margin-top 135px
-    text-align center
-    & p:first-child
-      font-size 45px
-      font-weight bolder
-    & p:nth-child(2)
-      margin-top 40px
-      font-size 35px
-      color #9b9b9b
-      margin-bottom 340px
-  .border-top
-    &:before
-      width 828px
-      margin-left 16px
-  footer
-    height 105px
+  .card-container
+    display flex
+    box-shadow 0 0 60px 20px #d3d3d3
+    width 860px
+    height 1535px
+    background #fefefe
+    display flex
+    flex-direction column
+    header
+      margin-top 146px
+      height 485px
+    main
+      normalFont()
+      flex 1
+      margin-top 135px
+      text-align center
+      & p:first-child
+        font-size 45px
+        font-weight bolder
+      & p:nth-child(2)
+        margin-top 40px
+        font-size 35px
+        color #9b9b9b
+        margin-bottom 340px
+    .border-top
+      &:before
+        width 828px
+        margin-left 16px
+    footer
+      height 105px
 </style>

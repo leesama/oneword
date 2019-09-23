@@ -1,5 +1,5 @@
 <template>
-  <div v-show="errorLoadingVisible">Sorry,请重试:(</div>
+  <div v-if="errorLoadingVisible">Sorry,请重试:(</div>
 </template>
 
 <script>
@@ -7,7 +7,6 @@ import { mapGetters } from 'vuex'
 export default {
   name: 'loading-error',
   computed: mapGetters([
-    // 映射 this.count 为 store.state.count
     'errorLoadingVisible'
   ])
 }

@@ -17,7 +17,7 @@ export default {
   name: 'card-base-content-vertical',
   mixins: [cardContentProps],
   computed: {
-    adjustPositionClass () {
+    adjustPositionClass() {
       return [
         { imgradius: this.isRadius && this.hasImg },
         { noimg: !this.hasImg },
@@ -51,12 +51,10 @@ export default {
       position relative
       padding-right 200px
       margin-right -200px
-      // margin-right 90px
       .title
         position absolute
         top 200px
         right 120px
-        // margin-left 50px
         font-size 50px
         height 100%
       &:before

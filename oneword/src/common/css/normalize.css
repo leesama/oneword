@@ -4,6 +4,11 @@ html {
   color: #000;
   font-size: 12px;
 }
+
+body {
+  width: 100%;
+  height: 100%;
+}
 body,
 ul,
 ol,

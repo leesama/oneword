@@ -1,6 +1,6 @@
 <template>
   <div class="imgwrapper">
-    <img v-lazy="src" :class="{radius:isRadius}" alt />
+    <img v-lazy="src" :key="src" :class="{radius:isRadius}" alt />
   </div>
 </template>
 
@@ -8,24 +8,16 @@
 export default {
   name: 'card-base-img',
   props: {
-    imgType: {
-      type: Number,
-      default () {
-        return 1
-      }
-    },
     src: {
       type: String
     },
     radius: {
       type: Boolean,
-      default () {
-        return true
-      }
+      default: true
     }
   },
   computed: {
-    isRadius () {
+    isRadius() {
       return this.radius
     }
   }
@@ -37,10 +29,10 @@ export default {
   center()
   height 100%
   overflow hidden
-.radius
-  border-radius 50%
-  height 433px
-  width 433px
+  .radius
+    border-radius 50%
+    height 433px
+    width 433px
 img
   width 100%
 </style>

@@ -2,7 +2,7 @@
   <div class="container">
     <div class="titlecontent" :class="[{center:isCenter},containerClass]">
       <p v-if="title" class="title">{{title}}</p>
-      <p>
+      <p class="content">
         <span v-html="content"></span>
       </p>
     </div>
@@ -17,7 +17,7 @@ export default {
   name: 'card-base-content-horizontal',
   mixins: [cardContentProps],
   computed: {
-    containerClass () {
+    containerClass() {
       return !this.hasImg && !this.title
         ? 'notitleimg'
         : !this.hasImg
@@ -26,7 +26,7 @@ export default {
             ? 'notitle'
             : ''
     },
-    fromp () {
+    fromp() {
       return this.from ? `- ${this.from} -` : ''
     }
   },

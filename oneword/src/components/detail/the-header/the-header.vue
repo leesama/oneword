@@ -1,15 +1,15 @@
 <template>
-  <header>
-    <div>
+  <div class="detail-header border-bottom">
+    <div class="left">
       <slot name="left"></slot>
     </div>
-    <div>
+    <div class="center">
       <slot name="mid"></slot>
     </div>
-    <div>
+    <div class="right">
       <slot name="right"></slot>
     </div>
-  </header>
+  </div>
 </template>
 
 <script>
@@ -18,10 +18,10 @@ export default {
 }
 </script>
 <style lang='stylus' scoped>
-header
-  box-shadow '0px' '-2px' '5px' '5px' #dddddd
+.detail-header
+  color #4a4a4a
   display grid
-  grid-template-columns repeat(3, 33.33%)
+  grid-template-columns 100px auto 100px
   line-height 130px
   text-align center
   height 130px
@@ -29,7 +29,15 @@ header
   div:first-child
     justify-self start
     padding-left 80px
+  div:nth-child(3)
+    justify-self end
+    padding-right 60px
   span
     font-size 60px
     font-family FZQingKeBenYueSongS-R-GB
+.border-bottom
+  &:before
+    border-color #e8e8e8 !important
+  &:after
+    border-color #e8e8e8 !important
 </style>

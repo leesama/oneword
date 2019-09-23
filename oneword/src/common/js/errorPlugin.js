@@ -5,7 +5,7 @@
  * @param {*} vm
  */
 
-function isPromise (ret) {
+function isPromise(ret) {
   return (
     ret && typeof ret.then === 'function' && typeof ret.catch === 'function'
   )
@@ -16,10 +16,10 @@ const errorHandler = (error, vm, info) => {
   console.error(error)
   console.error(info)
 }
-function registerActionHandle (actions) {
+function registerActionHandle(actions) {
   Object.keys(actions).forEach(key => {
     let fn = actions[key]
-    actions[key] = function (...args) {
+    actions[key] = function(...args) {
       let ret = fn.apply(this, args)
       if (isPromise(ret)) {
         return ret.catch(errorHandler)
@@ -61,7 +61,7 @@ let GlobalError = {
      */
     Vue.config.errorHandler = errorHandler
     Vue.mixin({
-      beforeCreate () {
+      beforeCreate() {
         registerVue(this)
         registerVuex(this)
       }

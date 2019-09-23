@@ -5,7 +5,7 @@
       <span v-if="showOrigin">#原创</span>
       <span>#{{type}}</span>
     </p>
-    <p class="createinfo">
+    <p class="createinfo" v-if="username">
       <span class="user">{{username}}</span>创建于
       <span class="bookname">「{{bookname}}」</span>
     </p>
@@ -22,17 +22,18 @@ export default {
     bookname: { type: String }
   },
   computed: {
-    showOrigin () {
+    showOrigin() {
       return this.original === '1'
     }
   }
 }
 </script>
 <style lang='stylus' scoped>
+@import '~@common/stylus/mixins.styl'
 .cardinfo
+  normalFont()
   color #555555
   font-size 29px
-  font-family FZZhengHeiS-EL-GB
   display flex
   flex-direction column
   margin-left 17px

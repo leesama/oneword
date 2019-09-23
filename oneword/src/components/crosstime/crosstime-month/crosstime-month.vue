@@ -1,5 +1,5 @@
 <template>
-  <scroll :scrollY="true" class="scroll">
+  <scroll :scrollY="true" class="scroll" tap="tap">
     <div class="month-container">
       <div
         class="month"
@@ -18,20 +18,20 @@
 import Scroll from '@components/scroll/scroll-base/scroll-base'
 export default {
   name: 'crosstime-month',
-  data () {
+  data() {
     return { time: '201603', index: 0 }
   },
   methods: {
-    handleClick (index, item) {
+    handleClick(index, item) {
       this.index = index
       this.$emit('monthChange', this.timeList[index])
     },
-    dotVisible (i) {
+    dotVisible(i) {
       return i === this.index
     }
   },
   computed: {
-    timeList () {
+    timeList() {
       const monthArray = [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
       const date = new Date()
       const currentYear = date.getFullYear()

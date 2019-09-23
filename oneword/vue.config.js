@@ -3,8 +3,11 @@ const path = require('path')
 const pxToUnit = require('stylus-px-to-relative-unit')
 const appData = require('./mock/1.json')
 const textcardlist = appData.textcardlist
+const crosstimelist = require('./mock/3.json').textcardlist
+const getcommentbycard = require('./mock/comment.json')
+const getalltextcard = require('./mock/all.json')
 
-function resolve (dir) {
+function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
@@ -26,9 +29,18 @@ module.exports = {
     }
   },
   devServer: {
-    before (app) {
-      app.get('/yiyan/getfeeds', function (req, res) {
+    before(app) {
+      app.get('/yiyan/getfeeds', function(req, res) {
         res.json(textcardlist)
+      })
+      app.get('/yiyan/getcommentbycard', function(req, res) {
+        res.json(getcommentbycard)
+      })
+      app.get('/yiyan/crosstime', function(req, res) {
+        res.json(crosstimelist)
+      })
+      app.get('/yiyan/getalltextcard', function(req, res) {
+        res.json(getalltextcard)
       })
       app.use(express.static('./mock/static'))
     }
@@ -40,7 +52,7 @@ module.exports = {
     //   }
     // }
   },
-  chainWebpack (config) {
+  chainWebpack(config) {
     config.resolve.alias
       .set('@views', resolve('src/views/'))
       .set('@models', resolve('src/models'))

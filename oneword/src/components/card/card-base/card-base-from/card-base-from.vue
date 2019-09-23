@@ -11,7 +11,7 @@ export default {
     }
   },
   computed: {
-    fromp () {
+    fromp() {
       return this.from ? `- ${this.from} -` : ''
     }
   }
