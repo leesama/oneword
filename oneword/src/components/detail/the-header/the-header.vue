@@ -21,15 +21,15 @@ export default {
 .detail-header
   color #4a4a4a
   display grid
-  grid-template-columns 100px auto 100px
+  grid-template-columns 130px auto 130px
   line-height 130px
   text-align center
   height 130px
   background-color #f6f6f6
-  div:first-child
+  .left
     justify-self start
     padding-left 80px
-  div:nth-child(3)
+  .right
     justify-self end
     padding-right 60px
   span

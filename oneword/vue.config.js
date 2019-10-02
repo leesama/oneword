@@ -4,6 +4,7 @@ const pxToUnit = require('stylus-px-to-relative-unit')
 const appData = require('./mock/1.json')
 const textcardlist = appData.textcardlist
 const crosstimelist = require('./mock/3.json').textcardlist
+const getuserinfoandbooklist = require('./mock/getuserinfoandbooklist.json')
 const getcommentbycard = require('./mock/comment.json')
 const getalltextcard = require('./mock/all.json')
 
@@ -41,6 +42,9 @@ module.exports = {
       })
       app.get('/yiyan/getalltextcard', function(req, res) {
         res.json(getalltextcard)
+      })
+      app.get('/yiyan/getuserinfoandbooklist', function(req, res) {
+        res.json(getuserinfoandbooklist)
       })
       app.use(express.static('./mock/static'))
     }

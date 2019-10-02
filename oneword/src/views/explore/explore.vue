@@ -94,16 +94,7 @@ export default {
     },
     // 弹出cardcontainer时需要禁用scroll,移除tranform
     handleCardContainerShow() {
-      const dom = this.$refs.tabs
-      if (dom.style && dom.style.transform) {
-        this.transformStyle = dom.style.transform
-        const tranformLeft = dom.style.transform.split('(')[1].split(')')[0]
-        const tranformTop = dom.style.transform.split('(')[2].split(')')[0]
-        dom.setAttribute(
-          'style',
-          `position:relative;left:${tranformLeft};top:${tranformTop};`
-        )
-      }
+      removeTransfrom(this.$refs.tabs)
       this.$refs.baseScroll.disable()
     },
     // 关闭之后添加上tranfrom

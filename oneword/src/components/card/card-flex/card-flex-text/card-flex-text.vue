@@ -83,14 +83,6 @@ export default {
       })
     }
   },
-  computed: {
-    from() {
-      return this.cardInfo.from
-    },
-    title() {
-      return this.cardInfo.title
-    }
-  },
   components: { CardImg, CardContent, CardFooter, CardInfo }
 }
 </script>

@@ -1,5 +1,7 @@
 <template>
-  <div class="toastMessageBox" v-show="show">{{message}}</div>
+  <transition name="fade">
+    <div class="toastMessageBox" v-if="show">{{message}}</div>
+  </transition>
 </template>
 
 <script>
@@ -15,16 +17,23 @@ export default {
 </script>
 
 <style  lang='stylus' scoped>
+.fade-enter
+  opacity 0
+.fade-leave
+  opacity 1
+.fade-enter-active, .fade-leave-active
+  transition 300ms
 .toastMessageBox
-  position absolute
+  font-family FZZhengHeiS-EL-GB
+  height 106px
+  padding 0 100px
+  background #4a4a4a
+  position fixed
+  top 85%
   left 50%
-  top 50%
-  -webkit-transform translate(-50%, -50%)
   transform translate(-50%, -50%)
-  background-color rgba(0, 0, 0, 0.8)
   color #fff
-  padding 8px
-  font-size 16px
-  border-radius 8px
   text-align center
+  line-height 106px
+  border-radius 10px
 </style>

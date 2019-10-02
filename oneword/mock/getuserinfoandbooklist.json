@@ -1,0 +1,36 @@
+{
+  "user": {
+    "actype": "2",
+    "uid": "1074052",
+    "username": "阿怪",
+    "device": "0",
+    "gender": "M",
+    "followcnt": "5",
+    "fanscnt": "1",
+    "smallavatar": "http://thirdwx.qlogo.cn/mmopen/vi_32/tNHYbW9g7BYLLU7CoGMLvvKSVkh3FbbN7rBE5GpQ0engO1Tt1y3icrBTiaZozRI6iaia82xuH6XQtlf8R7fRQPFxaA/132",
+    "intro": "111111",
+    "largeavatar": "http://thirdwx.qlogo.cn/mmopen/vi_32/tNHYbW9g7BYLLU7CoGMLvvKSVkh3FbbN7rBE5GpQ0engO1Tt1y3icrBTiaZozRI6iaia82xuH6XQtlf8R7fRQPFxaA/132"
+  },
+  "booklist": [
+    {
+      "bookid": "1484120",
+      "ava": "1",
+      "cardcnt": "2",
+      "bookname": "默认文集",
+      "datetime": "2019-06-24 12:07:45.0"
+    },
+    {
+      "bookid": "1540157",
+      "ava": "1",
+      "bookname": "1",
+      "datetime": "2019-07-17 23:07:27.0"
+    },
+    {
+      "bookid": "1541060",
+      "ava": "1",
+      "cardcnt": "1",
+      "bookname": "1111111111117哈哈还哈哈哈还好还好哈哈哈哈哈哈哈哈哈哈哈哈哈",
+      "datetime": "2019-07-18 11:40:03.0"
+    }
+  ]
+}

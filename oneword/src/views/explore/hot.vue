@@ -53,6 +53,9 @@ export default {
   updated() {
     this.$refs.hotScroll.refreshAfterAnimation()
   },
+  activated() {
+    this.$refs.hotScroll.refresh()
+  },
   async created() {
     const data = await getAllTextCard()
     this.cardList = this.cardContainerData = data.textcardlist

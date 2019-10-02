@@ -131,13 +131,13 @@ const CardTextComputed = {
       switch (this.cardInfo.category) {
         case '0':
           return '文字'
-        case '2000':
-          return 'music'
-        case '100002 ':
-          return 'topic'
+        case '1':
+          return '语录'
+        case '2':
+          return '歌词'
         case '3':
           return '电影'
-        case '1000':
+        case '4':
           return '诗'
         default:
           return '文字'
@@ -156,6 +156,12 @@ const CardTextComputed = {
     },
     original() {
       return this.cardInfo.original
+    },
+    from() {
+      return this.cardInfo.from
+    },
+    title() {
+      return this.cardInfo.title
     }
   }
 }

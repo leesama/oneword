@@ -85,7 +85,7 @@ export default {
   width 180px
   .month
     position relative
-    leftcenter()
+    rightcenter()
     box-sizing border-box
     padding-right 40px
     font1()

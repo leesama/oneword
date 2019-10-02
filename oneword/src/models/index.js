@@ -7,4 +7,5 @@ const getFeeds = getformateCard('/yiyan/getfeeds')
 const getCards = getformateCard('/yiyan/crosstime')
 const getComments = get('/yiyan/getcommentbycard')
 const getAllTextCard = get('/yiyan/getalltextcard')
-export { getFont, getCards, getFeeds, getComments, getAllTextCard }
+const getUserinfoAndBooklist = get('/yiyan/getuserinfoandbooklist')
+export { getFont, getCards, getFeeds, getComments, getAllTextCard, getUserinfoAndBooklist }

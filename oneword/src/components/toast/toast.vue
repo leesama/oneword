@@ -1,10 +1,12 @@
 <template>
   <div class="toast-wrapper">
-    <div class="mask" @click="handleCancelClick" />
-    <div class="toast">
-      <span v-for="(item, index) in toastInfo" :key="index" @click="handleClick(index)">{{item}}</span>
-      <span @click="handleCancelClick">取消</span>
-    </div>
+    <div class="mask" @click="handleCancelClick" v-if="toastVisible" />
+    <transition name="toast-transition">
+      <div class="toast" v-if="toastVisible">
+        <span v-for="(item, index) in toastInfo" :key="index" @click="handleClick(index)">{{item}}</span>
+        <span @click="handleCancelClick">取消</span>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -17,11 +19,15 @@ export default {
       default() {
         return ['回复', '复制', '举报']
       }
+    },
+    toastVisible: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
     handleClick(i) {
-      this.$emit('click', i)
+      this.$emit('toastClick', i)
     },
     handleCancelClick() {
       this.$emit('cancel')
@@ -46,7 +52,6 @@ export default {
   border-top-right-radius 30px
   user-select none
   position fixed
-  height 635px
   bottom 0
   background-color white
   left 0
@@ -71,4 +76,8 @@ export default {
     &:last-child
       border-top 18px solid #f2f2f2
       border-bottom none
+.toast-transition-enter, .toast-transition-leave-to
+  transform translate3d(0, 100%, 0)
+.toast-transition-enter-active, .toast-transition-leave-active
+  transition all 0.1s ease-out
 </style>

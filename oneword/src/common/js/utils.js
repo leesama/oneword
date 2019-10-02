@@ -38,11 +38,10 @@ export function formatTo1Level(data) {
 
 /**
  * @description: // 移除transfrom属性，用relative定位替换
- * @param {type} 类名
+ * @param {type} dom
  *
  */
-export function removeTransfrom(el) {
-  const dom = document.querySelector(el)
+export function removeTransfrom(dom) {
   if (dom.style && dom.style.transform) {
     const tranformLeft = dom.style.transform.split('(')[1].split(')')[0]
     const tranformTop = dom.style.transform.split('(')[2].split(')')[0]
@@ -51,4 +50,32 @@ export function removeTransfrom(el) {
       `position:relative;left:${tranformLeft};top:${tranformTop};`
     )
   }
+}
+/**
+ * @description:  封装成Promise的FileReader 函数
+ * @param {type}
+ * @return:
+ */
+export function reader(file, options) {
+  options = options || {}
+  return new Promise(function(resolve, reject) {
+    let reader = new FileReader()
+
+    reader.onload = function() {
+      resolve(reader)
+    }
+    reader.onerror = reject
+
+    if (options.accept && !new RegExp(options.accept).test(file.type)) {
+      reject(new Error(
+        'wrong file type'
+      ))
+    }
+
+    if (!file.type || /^text\//i.test(file.type)) {
+      reader.readAsText(file)
+    } else {
+      reader.readAsDataURL(file)
+    }
+  })
 }

@@ -16,13 +16,13 @@ let toastMessage = (options) => {
     instance.show = false
     instance.message = ''
   }
-  instance.time = 3000
+  instance.time = 500
   if (typeof options === 'string') {
     instance.message = options
   } else if (typeof options === 'object') {
     let { message, time } = options
     instance.message = message
-    instance.time = time || 3000
+    instance.time = time || 500
   } else {
     return
   }

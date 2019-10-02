@@ -32,6 +32,8 @@
     "babel-eslint": "^10.0.1",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
+    "less": "^3.10.3",
+    "less-loader": "^5.0.0",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
     "stylus-px-to-relative-unit": "^1.2.0",

@@ -5,7 +5,7 @@
         <span>信息</span>
       </template>
       <template #right>
-        <router-link tag="i" class="iconfont" to="/">&#xe612;</router-link>
+        <!-- <router-link tag="i" class="iconfont" to="/">&#xe612;</router-link> -->
       </template>
     </the-header>
   </div>

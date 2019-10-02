@@ -6,9 +6,7 @@
 import { mapGetters } from 'vuex'
 export default {
   name: 'loading-error',
-  computed: mapGetters([
-    'errorLoadingVisible'
-  ])
+  computed: mapGetters(['errorLoadingVisible'])
 }
 </script>
 <style lang='stylus' scoped>

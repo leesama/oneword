@@ -56,7 +56,7 @@ export default {
   mixins: [cardDetailPropsComputed, cardFooterComputed, CardTextComputed],
   updated() {
     // 数据更新后刷新scroll
-    // this.$refs.scrollY.refresh()
+    this.$refs.scrollY.refresh()
   },
   mounted() {
     setTimeout(() => {

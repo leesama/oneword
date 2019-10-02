@@ -3,6 +3,10 @@ html {
   background-color: #fff;
   color: #000;
   font-size: 12px;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 body {
@@ -66,14 +70,7 @@ button,
 select {
   font-size: 100%;
 }
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  /* font-family: tahoma, arial, 'Hiragino Sans GB', '微软雅黑', simsun, sans-serif; */
-}
+
 h1,
 h2,
 h3,
@@ -152,10 +149,17 @@ textarea {
 input,
 textarea,
 button,
-select,
-a {
-  outline: 0 none;
+select {
+  outline: none;
   border: none;
+  -webkit-appearance: none;
+  font-family: 'Heiti SC', 'Droid Sans Fallback', 'Microsoft YaHei Light',
+    'Microsoft YaHei';
+}
+a {
+  outline: none;
+  border: none;
+  -webkit-appearance: none;
 }
 button::-moz-focus-inner,
 input::-moz-focus-inner {
@@ -183,7 +187,8 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 body {
-  /* font-family: Arial, 'Microsoft Yahei', 'Helvetica Neue', Helvetica, sans-serif; */
+  font-family: 'Heiti SC', 'Droid Sans Fallback', 'Microsoft YaHei Light',
+    'Microsoft YaHei';
   color: #333;
   font-size: 0.28em;
   line-height: 1;

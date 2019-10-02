@@ -3,7 +3,7 @@
     <div class="header">
       <the-header>
         <template #left>
-          <router-link tag="i" class="iconfont" to="/comment">&#xe612;</router-link>
+          <router-link tag="i" class="iconfont" to="/comment" replace>&#xe612;</router-link>
         </template>
         <template #mid>
           <span>热门</span>
@@ -13,7 +13,7 @@
 
     <div class="comment-scroll">
       <!-- 传入commentData,scroll-y会在恰当的时机刷新页面-->
-      <scroll-y ref="scroll" :pullUpLoad="true" @pullingUp="handlePullingUp">
+      <scroll-y ref="scroll" :pullUpLoad="true" @pullingUp="handlePullingUp" class="scroll">
         <div class="content">
           <comment-detail
             @contentClick="handleContentClick"
@@ -26,7 +26,7 @@
       </scroll-y>
     </div>
     <bottom-input @click="handleSubmitFeeling" />
-    <toast v-show="toastVisible" @cancel="handleCancelToast" />
+    <toast :toastVisible="toastVisible" @cancel="handleCancelToast" />
   </div>
 </template>
 
@@ -150,4 +150,5 @@ export default {
   width 15px !important
 .comment-scroll >>> .bscroll-vertical-scrollbar
   top 132px !important
+  z-index 1 !important
 </style>

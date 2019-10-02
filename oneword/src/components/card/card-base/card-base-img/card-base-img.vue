@@ -33,6 +33,7 @@ export default {
     border-radius 50%
     height 433px
     width 433px
+    object-fit cover
 img
   width 100%
 </style>

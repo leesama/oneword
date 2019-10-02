@@ -11,7 +11,7 @@
     >
       <i :class="calIconClass(index)" class="iconfont" />
     </router-link>
-    <router-link to="/home" tag="div" class="tab" @click.native="handleClick">
+    <router-link to="/new-word" tag="div" class="tab">
       <i class="iconfont icon-jia" />
     </router-link>
   </footer>
@@ -26,7 +26,7 @@ export default {
         { tabTo: '/', tabIcon: 'icon-home' },
         { tabTo: '/explore', tabIcon: 'icon-sousuo' },
         { tabTo: '/message', tabIcon: 'icon-message' },
-        { tabTo: '/', tabIcon: 'icon-wode' }
+        { tabTo: '/mine', tabIcon: 'icon-wode' }
       ],
       selectTab: 0
     }
@@ -68,6 +68,7 @@ i
   &:last-child i
     font-size 110px
 .detail-footer
+  z-index 2
   position fixed
   bottom 0
   left 0

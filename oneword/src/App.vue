@@ -74,6 +74,10 @@ export default {
         this.transitionName = 'slide-left'
       } else if (to.meta.index < from.meta.index) {
         this.transitionName = 'slide-right'
+      } else if (to.path === '/new-word') {
+        this.transitionName = 'slide-top'
+      } else if (from.path === '/new-word') {
+        this.transitionName = 'slide-bottom'
       } else {
         this.transitionName = ''
       }
@@ -89,7 +93,7 @@ export default {
         }
       } else {
         // 一直不需要缓存的页面
-        this.excludePageNames = ['hot-comment']
+        this.excludePageNames = ['hot-comment', 'new-word']
       }
     }
   },
@@ -99,6 +103,8 @@ export default {
 <style lang="stylus">
 @import '~@common/stylus/mixins.styl'
 #app
+  -webkit-font-smoothing antialiased
+  -moz-osx-font-smoothing grayscale
   backface-visibility hidden
   perspective 1000
   transform translateZ(0)
@@ -107,7 +113,7 @@ export default {
 // 转场动画
 .slide-right-enter-active, .slide-right-leave-active, .slide-left-enter-active, .slide-left-leave-active
   transition transform 300ms
-  // 这里设置fixed  让每一个页面的动画运行的时候脱离文档流，防止
+  // 这里设置fixed  让每一个页面的动画运行的时候脱离文档流
   position fixed
 .slide-right-enter
   transform translate3d(-100%, 0, 0)
@@ -115,4 +121,14 @@ export default {
 .slide-left-enter
   transform translate3d(100%, 0, 0)
   transition-timing-function ease-in
+.slide-top-enter-active, .slide-top-leave-active, .slide-bottom-leave-active
+  transition transform 300ms
+  position fixed
+.slide-bottom-leave-active
+  // 这里因为newword页面设置了relative,fixed定位没有覆盖掉，设置其优先级，然后设置leave的层级比enter的高
+  transition transform 300ms
+  position fixed !important
+  z-index 9999
+.slide-top-enter, .slide-bottom-leave-to
+  transform translate3d(0, 100%, 0)
 </style>

@@ -45,7 +45,7 @@
       </scroll-y>
     </div>
     <bottom-input @click="handleSubmitFeeling" />
-    <toast v-show="toastVisible" @cancel="handleCancelToast" />
+    <toast :toastVisible="toastVisible" @cancel="handleCancelToast" />
   </div>
 </template>
 
@@ -85,7 +85,7 @@ export default {
   },
   methods: {
     handleClickBack() {
-      this.$router.push('/home')
+      this.$router.back(-1)
     },
     // 监听到加载更多后，会展示更多页面，此时需要刷新scroll
     handleMoreClick() {
@@ -94,7 +94,7 @@ export default {
     },
     handlePullingUp() {},
     handleMoreHotClick() {
-      this.$router.push({
+      this.$router.replace({
         name: 'hot-comment',
         params: { cardInfo: this.cardInfo }
       })
