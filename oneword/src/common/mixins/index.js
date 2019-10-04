@@ -91,38 +91,27 @@ const CardTextComputed = {
     // style相关属性begin
     fontStyle() {
       let fontFamily
-      const type = this.cardInfo.type
-      const fontPrefix = type.substr(2, 1)
-      const fontSuffix = type.substr(8, 1)
-      if (fontPrefix === 'v') {
-        switch (fontSuffix) {
-          case '0':
-            fontFamily = 'FZQingKeBenYueSongS-R-GB'
-            break
-          case '1':
-            fontFamily = 'FZSongYi-Z13S'
-            break
-          default:
-            return
-        }
-      } else {
-        switch (fontSuffix) {
-          case '0':
-            fontFamily = 'FZQingKeBenYueSongS-R-GB'
-            break
-          case '1':
-            fontFamily = 'FZSongYi-Z13S'
-            break
-          case '2':
-            fontFamily = 'FZZhengHeiS-EL-GB'
-            break
-          case '3':
-            fontFamily = 'FZShuSong-Z01S'
-            break
-          default:
-            return
-        }
+      const fontCode = this.cardInfo.type.substr(8, 1)
+      switch (fontCode) {
+        case '0':
+          fontFamily = 'FZQingKeBenYueSongS-R-GB'
+          break
+        case '1':
+          fontFamily = 'FZSongYi-Z13S'
+          break
+        case '2':
+          fontFamily = 'FZZhengHeiS-EL-GB'
+          break
+        case '3':
+          fontFamily = 'FZShuSong-Z01S'
+          break
+        case '4':
+          fontFamily = 'FZSuXinShiLiuKaiS-R-GB'
+          break
+        default:
+          return
       }
+
       return { fontFamily }
     },
     // style相关属性end

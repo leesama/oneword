@@ -77,8 +77,7 @@ export default {
       wordImageClipperVisible: false,
       selectCategoryIndex: 0,
       title: '11',
-      content:
-        '1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111',
+      content: '1111111111111111111111111111111111111111',
       user: '11',
       category: ['文字', '语录', '歌词', '电影', '诗'],
       isOriginal: false,
@@ -90,7 +89,6 @@ export default {
     handleToSecondStep() {
       this.content.length > 0
         ? this.$emit('toSecondStep', {
-          type: 'yyw_0_0_0_0',
           picpath: this.wordImg,
           title: this.title,
           content: this.content,

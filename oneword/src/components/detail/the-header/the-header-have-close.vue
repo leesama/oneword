@@ -16,7 +16,6 @@
       <span @click="handleRightClick">
         <slot name="right">完成</slot>
       </span>
-      <slot name="right2"></slot>
     </template>
   </the-header>
 </template>

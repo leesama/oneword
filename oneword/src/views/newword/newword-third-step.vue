@@ -5,16 +5,14 @@
         <i class="iconfont">&#xe612;</i>
       </template>
       <template #mid>「选择样式」</template>
-      <template #right>预览</template>
-      <template #right2>
-        <span>完成</span>
-      </template>
     </the-header>
 
     <scroll-base class="main-scroll" ref="scroll">
       <div class="card-main" ref="main">
         <div class="img-wrapper">
-          <card-img ref="wordImg" :src="imgSrc" v-if="imgSrc" class="img" :radius="isRadius" />
+          <transition name="img-transition">
+            <card-img ref="wordImg" :src="imgSrc" v-if="imgSrc" class="img" :radius="isRadius" />
+          </transition>
         </div>
 
         <div class="content-wrapper" ref="content">
@@ -23,10 +21,10 @@
             :style="fontStyle"
             :is="contentComponent"
             :isCenter="isCenter"
-            :content="content"
-            :title="title"
-            :hasImg="imgSrc"
-            :from="from"
+            :content="cardInfo.content"
+            :title="cardInfo.title"
+            :hasImg="cardInfo.picpath"
+            :from="cardInfo.from"
           ></component>
         </div>
       </div>
@@ -34,12 +32,20 @@
 
     <footer>
       <div class="direction-container">
-        <div class="direction-button">
+        <div
+          class="direction-button"
+          :class="{buttonborder:direction===0}"
+          @click="handleClickChangeDirection0"
+        >
           <div class="top" />
           <div class="li1" />
           <div class="li2" />
         </div>
-        <div class="direction-button">
+        <div
+          class="direction-button"
+          :class="{buttonborder:direction===1}"
+          @click="handleClickChangeDirection1"
+        >
           <div class="top" />
           <div class="li-container">
             <div class="li1" />
@@ -49,13 +55,23 @@
       </div>
 
       <div class="type-container">
-        <div class="type-button">
+        <div
+          class="type-button"
+          ref="radiusButton"
+          :class="{noimgbutton:!imgSrc}"
+          @click="handleClickChangeRadius"
+        >
           <div class="circle"></div>
         </div>
-        <div class="type-button">
+        <div class="type-button" ref="fontButton" @click="handleClickChangeFontType">
           <span>T</span>
         </div>
-        <div class="type-button">
+        <div
+          class="type-button"
+          ref="centerButton"
+          :class="{noimgbutton:direction===1}"
+          @click="handleClickChangeCenter"
+        >
           <ul>
             <li></li>
             <li></li>
@@ -72,7 +88,7 @@
 import ScrollBase from '@components/scroll/scroll-base/scroll-base'
 import CardInfo from '@components/card/card-base/card-base-info/card-base-info'
 import CardImg from '@components/card/card-base/card-base-img/card-base-img.vue'
-import { CardTextComputed, CardImgComputed } from '@mixins'
+import { CardImgComputed } from '@mixins'
 import TheHeader from '@components/detail/the-header/the-header-have-close.vue'
 const CardVerticalContent = () =>
   import('@components/card/card-base/card-base-content-vertical/card-base-content-vertical')
@@ -80,11 +96,81 @@ const CardHorizontalContent = () =>
   import('@components/card/card-base/card-base-content-horizontal/card-base-content-horizontal')
 export default {
   name: 'newword-third-step',
-  mixins: [CardTextComputed, CardImgComputed],
+  mixins: [CardImgComputed],
+  data() {
+    return {
+      isRadius: false,
+      isCenter: false,
+      direction: 0,
+      fontCode: 0
+    }
+  },
   props: { cardInfo: { type: Object } },
   methods: {
     handleClose() {
       this.$emit('closeThirdStep')
+    },
+    handleClickChangeDirection0() {
+      this.direction = 0
+    },
+    handleClickChangeDirection1() {
+      this.direction = 1
+    },
+    handleClickChangeRadius(e) {
+      this._clickAnimation(this.$refs.radiusButton)
+      this.isRadius = !this.isRadius
+    },
+    handleClickChangeFontType(e) {
+      this._clickAnimation(this.$refs.fontButton)
+      this.fontCode = this.fontCode === 4 ? 0 : this.fontCode + 1
+    },
+    handleClickChangeCenter(e) {
+      this._clickAnimation(this.$refs.centerButton)
+      this.isCenter = !this.isCenter
+    },
+    _clickAnimation(target) {
+      this.$anime.set(target, {
+        boxShadow: '0 0 10px white'
+      })
+      this.$anime({
+        targets: target,
+        boxShadow: '0 0 10px white',
+        duration: 300,
+        complete() {
+          target.removeAttribute('style')
+        }
+      })
+    }
+  },
+  computed: {
+    contentComponent() {
+      return this.direction === 0
+        ? 'CardHorizontalContent'
+        : 'CardVerticalContent'
+    },
+    fontStyle() {
+      let fontFamily
+      switch (this.fontCode) {
+        case 0:
+          fontFamily = 'FZQingKeBenYueSongS-R-GB'
+          break
+        case 1:
+          fontFamily = 'FZSongYi-Z13S'
+          break
+        case 2:
+          fontFamily = 'FZZhengHeiS-EL-GB'
+          break
+        case 3:
+          fontFamily = 'FZShuSong-Z01S'
+          break
+        case 4:
+          fontFamily = 'FZSuXinShiLiuKaiS-R-GB'
+          break
+        default:
+          return
+      }
+
+      return { fontFamily }
     }
   },
   updated() {
@@ -111,6 +197,7 @@ export default {
   .main-scroll
     flex 1
     .card-main
+      min-height 100.001%
       padding 30px
       .img-wrapper
         height 666px
@@ -180,13 +267,15 @@ export default {
               background-color #d8d8d8
       .direction-button:last-child
         margin-right 0px
+      .buttonborder
+        border 1px solid #9b9b9b
     .type-container
       center()
       .type-button
         margin-right 60px
         height 122px
         width 122px
-        background-color #a4a4a4
+        background-color #fefefe
         border-radius 50%
         &:last-child
           margin-right 0px
@@ -203,7 +292,7 @@ export default {
           font-size 65px
         ul
           li
-            height 10px
+            height 9px
             margin-bottom 8px
             background-color #4a4a4a
           li:nth-child(1)
@@ -215,4 +304,7 @@ export default {
           li:nth-child(4)
             margin-bottom 0px
             width 65px
+      .noimgbutton
+        background-color #a4a4a4
+        pointer-events none
 </style>

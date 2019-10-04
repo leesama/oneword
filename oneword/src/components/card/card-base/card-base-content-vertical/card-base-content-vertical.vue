@@ -58,7 +58,8 @@ export default {
         font-size 50px
         height 100%
       &:before
-        margin-left 7px
+        vertical-align middle
+        margin-left -18px
         display inline-block
         content ''
         width 20px

@@ -13,6 +13,7 @@ import VueLazyload from 'vue-lazyload'
 import TextareaAutosize from 'vue-textarea-autosize'
 // 自定义的message 提示消息插件
 import toastMessage from '@/plugins/toast'
+// import Vconsole from 'vconsole'
 // 需开启observer,Intersection Observer API提供了一种异步观察目标元素与祖先元素或顶级文档viewport的交集中的变化的方法。
 Vue.use(VueLazyload, {
   // set observer to true
@@ -26,7 +27,8 @@ Vue.use(VueLazyload, {
 })
 Vue.use(toastMessage)
 Vue.use(TextareaAutosize)
-
+// let vConsole = new Vconsole()
+// Vue.use(vConsole)
 Vue.prototype.$anime = anime
 Vue.config.productionTip = false
 new Vue({

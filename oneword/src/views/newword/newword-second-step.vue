@@ -34,6 +34,7 @@
       <div v-if="newWorkVisible" class="new-work">
         <the-header @close="handleCloseNewWork" />
         <div class="new-work-main" @click="handleAddCover">
+          <img :src="coverImg" alt />
           <p>
             <span>文集封面图</span>
             <span>(可无)</span>
@@ -70,7 +71,8 @@ export default {
     return {
       selectBookIndex: 0,
       newWorkVisible: false,
-      coverImageClipperVisible: false
+      coverImageClipperVisible: false,
+      coverImg: ''
     }
   },
   methods: {
@@ -100,6 +102,7 @@ export default {
     },
     handleCloseNewWork() {
       this.newWorkVisible = false
+      this.coverImg = ''
     },
     handleAddCover() {
       this.$refs.coverInput.click()
@@ -115,8 +118,9 @@ export default {
       this.coverImageClipperVisible = false
     },
     handleOkCoverImageClip(data) {
+      this.$refs.newWorkinput.focus()
+      this.coverImg = data
       this.coverImageClipperVisible = false
-      console.log(data)
     }
   },
   components: { TheHeader, ScrollBase, ImageClipper }
@@ -188,6 +192,16 @@ export default {
       width 360px
       margin-bottom 90px
       center()
+      position relative
+      img
+        width 100%
+        height 100%
+        position absolute
+        left 0
+        right 0
+        top 0
+        bottom 0
+        object-fit cover
       p
         display flex
         align-items center

@@ -216,7 +216,7 @@ export default {
 @import '~@common/stylus/mixins.styl'
 // bs内容区域必须高于wrpper才能滚动,写死内容区域最小高度大于wrapper高度，避免内容小于wrapper高度
 .scroll-content
-  min-height 100.5%
+  min-height 100.001%
   position relative
   .animation-ul
     top '-100px'

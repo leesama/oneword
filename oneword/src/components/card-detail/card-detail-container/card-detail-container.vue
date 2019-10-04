@@ -14,6 +14,7 @@
       @touchEnd="touchEnd"
       :stopPropagation="true"
       :momentumLimitDistance="30"
+      :directionLockThreshold="0"
       :tagException="{ className: /(^|\s)process-btn(\s|$)/ }"
     >
       <div class="card-container">

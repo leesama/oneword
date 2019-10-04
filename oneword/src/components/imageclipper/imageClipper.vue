@@ -128,7 +128,7 @@ export default {
       imgCurrentHeight: null,
       imgX: null, // img对于canvas的坐标
       imgY: null,
-      imgScale: 1, // 图片目前的缩放倍数 范围是1-5
+      imgScale: 2, // 图片目前的缩放倍数 范围是1-5
       imgMinScale: 1,
       imgMaxScale: 5,
       imgScaleStep: 60, // 缩放步长，每60px加减0.1
@@ -464,23 +464,28 @@ export default {
     _clipper() {
       let imgData = null
       try {
+        // 只裁切图片有内容的区域
         // 计算中心区域距离顶部的距离和宽度
         const pCanvasToTop = this.$refs.pCanvas.getBoundingClientRect().top
-        // const pCanvasWidth = this.$refs.pCanvas.getBoundingClientRect().width
+        const pCanvasWidth = this.$refs.pCanvas.getBoundingClientRect().width
         const pCanvasHeigth = this.$refs.pCanvas.getBoundingClientRect().height
         const x = Math.max(0, this.imgX)
         const y = Math.max(pCanvasToTop, this.imgY)
-        const width =
-          this.imgX > 0
-            ? this.imgCurrentWidth - this.imgX
-            : this.imgCurrentWidth + this.imgX
-        let height
+        let width, height
+        if (this.imgX >= 0) {
+          width = pCanvasWidth - this.imgX
+        } else if (this.imgX < 0) {
+          const contentWidth = this.imgCurrentWidth + this.imgX
+          width = contentWidth < pCanvasWidth ? contentWidth : pCanvasWidth
+        }
+        // 如果图片顶部的值大于中部到顶端的值
         if (
           this.imgY > pCanvasToTop &&
           this.imgY + this.imgCurrentHeight < pCanvasToTop + pCanvasHeigth
         ) {
           height = this.imgCurrentHeight
         } else if (this.imgY < pCanvasToTop) {
+          // 如果图片顶部的值小于中部到顶端的值
           if (
             this.imgY + this.imgCurrentHeight >
             pCanvasToTop + pCanvasHeigth
@@ -495,13 +500,13 @@ export default {
         ) {
           height = pCanvasToTop + pCanvasHeigth - this.imgY
         }
-        console.log(x * 3, y * 3, width * 3, height * 3)
+        console.log(x, y, width, height)
         imgData = this.cropImage(
           this.$refs.canvas,
-          x * 3,
-          y * 3,
-          width * 3,
-          height * 3
+          this._ratio(x),
+          this._ratio(y),
+          this._ratio(width),
+          this._ratio(height)
         )
       } catch (e) {
         console.error(
