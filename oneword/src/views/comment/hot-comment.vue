@@ -26,12 +26,13 @@
       </scroll-y>
     </div>
     <bottom-input @click="handleSubmitFeeling" />
-    <toast :toastVisible="toastVisible" @cancel="handleCancelToast" />
+    <drawer :toastVisible="toastVisible" @cancel="handleCancelToast" />
   </div>
 </template>
 
 <script>
-import Toast from '@components/toast/toast.vue'
+import Drawer from '@components/drawer/drawer'
+
 import BottomInput from '@components/input/bottom-input/bottom-input.vue'
 import ScrollY from '@components/scroll/scroll-y/scroll-y.vue'
 import TheHeader from '@components/detail/the-header/the-header.vue'
@@ -91,7 +92,7 @@ export default {
   components: {
     TheHeader,
     ScrollY,
-    Toast,
+    Drawer,
     CommentDetail,
     BottomInput
   }

@@ -1,9 +1,15 @@
 import * as types from '../mutation-types'
 const common = {
-  state: { errorLoadingVisible: false },
+  state: { loadingMaskVisible: false, userInfoAndBookList: null },
   mutations: {
-    [types.SET_ERROR_VISIBLE](state, visible) {
-      state.errorLoadingVisible = visible
+    [types.SET_LOADING_MASK_VISIBLE](state, visible) {
+      state.loadingMaskVisible = visible
+    },
+    [types.SET_USERINFO_AND_BOOKLIST](state, info) {
+      state.userInfoAndBookList = info
+    },
+    [types.RESET_COMMON_STATE](state) {
+      Object.assign(state, JSON.parse(localStorage.getItem('initState')).common)
     }
   }
 }

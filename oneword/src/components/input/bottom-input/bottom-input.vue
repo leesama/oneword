@@ -12,7 +12,7 @@
       />
 
       <span />
-      <span @click="handleClik">发送</span>
+      <span @click="handleClick">发送</span>
     </div>
     <div class="mask" v-show="maskVisible" @click="handleClickMask" />
   </div>
@@ -23,15 +23,22 @@ export default {
   name: 'buttom-input',
   data() {
     return {
-      content: '',
+      content: this.inputContent,
       maskVisible: false
     }
   },
   methods: {
+    setContent(c) {
+      this.content = c
+      this.$refs.myTextarea.$el.focus()
+    },
     handleClickMask() {},
-    handleClik() {
+    handleClick() {
+      this.$emit(
+        'send',
+        this.content.replace(/\n/g, '<br>').replace(/\r/g, '&nbsp;')
+      )
       this.content = ''
-      this.$emit('click', this.content)
     },
     onFocusTextarea(e) {
       this.maskVisible = true

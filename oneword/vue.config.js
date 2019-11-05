@@ -13,7 +13,7 @@ function resolve(dir) {
 }
 
 module.exports = {
-  transpileDependencies: ['vue-clamp', 'resize-detector'],
+  productionSourceMap: false,
   css: {
     loaderOptions: {
       stylus: {
@@ -30,31 +30,34 @@ module.exports = {
     }
   },
   devServer: {
-    before(app) {
-      app.get('/yiyan/getfeeds', function(req, res) {
-        res.json(textcardlist)
-      })
-      app.get('/yiyan/getcommentbycard', function(req, res) {
-        res.json(getcommentbycard)
-      })
-      app.get('/yiyan/crosstime', function(req, res) {
-        res.json(crosstimelist)
-      })
-      app.get('/yiyan/getalltextcard', function(req, res) {
-        res.json(getalltextcard)
-      })
-      app.get('/yiyan/getuserinfoandbooklist', function(req, res) {
-        res.json(getuserinfoandbooklist)
-      })
-      app.use(express.static('./mock/static'))
+    // before(app) {
+    //   app.get('/yiyan/getfeeds', function(req, res) {
+    //     res.json(textcardlist)
+    //   })
+    //   app.get('/yiyan/getcommentbycard', function(req, res) {
+    //     res.json(getcommentbycard)
+    //   })
+    //   app.get('/yiyan/crosstime', function(req, res) {
+    //     res.json(crosstimelist)
+    //   })
+    //   app.get('/yiyan/getalltextcard', function(req, res) {
+    //     res.json(getalltextcard)
+    //   })
+    //   app.get('/yiyan/getuserinfoandbooklist', function(req, res) {
+    //     res.json(getuserinfoandbooklist)
+    //   })
+    //   app.use(express.static('./mock/static'))
+    // },
+    proxy: {
+      '/yiyan': {
+        target: 'http://192.168.1.2:3000/yiyan', // API服务器的地址
+        changeOrigin: true,
+        ws: true,
+        pathRewrite: {
+          '^/yiyan': ''
+        }
+      }
     }
-    //, proxy: {
-    //   '/': {
-    //     target: 'http://localhost:3000/',
-    //     ws: false,
-    //     changeOrigin: true
-    //   }
-    // }
   },
   chainWebpack(config) {
     config.resolve.alias
@@ -71,7 +74,7 @@ module.exports = {
       .set('@store', resolve('src/store'))
   },
   pwa: {
-    name: 'My App',
+    name: 'oneword',
     themeColor: '#4DBA87',
     msTileColor: '#000000',
     appleMobileWebAppCapable: 'yes',

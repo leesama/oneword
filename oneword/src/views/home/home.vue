@@ -13,51 +13,43 @@
     <scroll-x
       class="homeScroll scroll"
       ref="scroll"
-      :data="list"
+      :data="homeCardInfo"
       @refresh="loadData"
       @leftSlip="loadLeftSlipData"
-      @cardTap="handleCardTap"
-      :containerCardIndex="containerCardIndex"
     />
-    <card-container
-      @back="handleBack"
-      cardClassName=".homeScroll .card-container"
-      scrollContentClassName=".homeScroll .scroll-content"
-      :cardContainerData="cardContainerData"
-      :cardTapCardData="cardTapCardData"
-      v-if="cardContainerVisible"
-    ></card-container>
   </div>
 </template>
 
 <script>
-import CardContainer from '@components/card-detail/card-detail-container/card-detail-container'
-import { formatTo1Level } from '@js/utils.js'
+import { mapMutations, mapGetters } from 'vuex'
 import TheHeader from '@components/detail/the-header/the-header'
 import ScrollX from '@components/scroll/scroll-x/scroll-x'
 import { getFeeds } from '@models'
-import { pageCommon } from '@mixins'
-
 export default {
-  name: 'Home',
-  mixins: [pageCommon],
+  name: 'home',
   created() {
     this.loadData()
   },
   methods: {
+    ...mapMutations({ setCardInfo: 'SET_CARDS_INFO' }),
     async loadData() {
-      this.list = (await getFeeds()).slice(0, 3)
-      this.cardContainerData = formatTo1Level(this.list)
-      this.day = 3
+      const data = (await getFeeds()).data.textcardlist
+      // 数据存入vuex
+      this.setCardInfo({
+        type: 'home',
+        info: data
+      })
     },
-    async loadLeftSlipData() {
-      const nextDay = this.day + 3
-      this.list = this.list.concat((await getFeeds()).slice(this.day, nextDay))
-      this.cardContainerData = formatTo1Level(this.list)
-      this.day = nextDay
+    async loadLeftSlipData(datetime) {
+      const data = (await getFeeds({ datetime })).data.textcardlist
+      this.setCardInfo({
+        type: 'home',
+        info: this.homeCardInfo.concat(data)
+      })
     }
   },
-  components: { TheHeader, ScrollX, CardContainer }
+  computed: { ...mapGetters(['homeCardInfo']) },
+  components: { TheHeader, ScrollX }
 }
 </script>
 <style lang='stylus' scoped>

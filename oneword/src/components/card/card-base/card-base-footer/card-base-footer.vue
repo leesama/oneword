@@ -2,7 +2,7 @@
   <div class="card-footer border-top">
     <collect-button :number="collectcnt" class="button" @click="handleCollectClick" />
     <reply-button :number="replycnt" class="button" @click="handleReplyClick" />
-    <like-button :number="likecnt" class="button" @click="handleLikeClick" />
+    <like-button :number="likecnt" :liked="liked" class="button" @click="handleLikeClick" />
   </div>
 </template>
 
@@ -24,6 +24,10 @@ export default {
     likecnt: {
       type: Number,
       default: 0
+    },
+    liked: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {

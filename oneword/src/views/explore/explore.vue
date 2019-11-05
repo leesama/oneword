@@ -35,6 +35,7 @@
         @touchEnd="touchEnd"
         :directionLockThreshold="0"
         :momentumLimitDistance="30"
+        :nestedScroll="true"
       >
         <div class="tab-container" ref="tabs">
           <div class="hot-tab tab" ref="hotTab">
@@ -45,19 +46,29 @@
             />
           </div>
           <div class="explore-tab tab" ref="exploreTab">
-            <div class="explore-title">
-              <div
-                v-for="(item, index) in exploreTitleName"
-                :key="index"
-                class="all"
-                :class="{exploretitleclick:exploreTitleIndex===index?true:false }"
-                @click="handleTitleClick(index)"
-              >{{item}}</div>
-            </div>
-            <router-view
-              @cardContainerShow="handleCardContainerShow"
-              @cardContainerClose="handleCardContainerClose"
-            ></router-view>
+            <base-scroll
+              :scrollX="true"
+              tap="tap"
+              :nestedScroll="true"
+              :bounce="{left:false,right:false}"
+              :stopPropagation="true"
+            >
+              <div class="explore-title">
+                <div
+                  v-for="(item, index) in exploreTitleName"
+                  :key="index"
+                  :class="{exploretitleclick:exploreTitleIndex===index?true:false }"
+                  @tap="handleTitleClick(index)"
+                >{{item}}</div>
+              </div>
+            </base-scroll>
+            <keep-alive>
+              <router-view
+                class="explore"
+                @cardContainerShow="handleCardContainerShow"
+                @cardContainerClose="handleCardContainerClose"
+              ></router-view>
+            </keep-alive>
           </div>
         </div>
       </base-scroll>
@@ -66,7 +77,6 @@
 </template>
 
 <script>
-import { removeTransfrom } from '@js/utils.js'
 import Hot from './hot.vue'
 import BaseScroll from '@components/scroll/scroll-base/scroll-base.vue'
 export default {
@@ -75,7 +85,7 @@ export default {
     return {
       headerIndex: 0,
       exploreTitleIndex: 0,
-      exploreTitleName: ['所有', '原创', '文字', '诗', '电影', '语录']
+      exploreTitleName: ['所有', '原创', '文字', '诗', '电影', '语录', '歌词']
     }
   },
   mounted() {
@@ -94,15 +104,25 @@ export default {
     },
     // 弹出cardcontainer时需要禁用scroll,移除tranform
     handleCardContainerShow() {
-      removeTransfrom(this.$refs.tabs)
-      this.$refs.baseScroll.disable()
+      const dom = this.$refs.tabs
+      // 用户还没有左右滑动的时候没有transform元素，不需要移除
+      if (dom.style && dom.style.transform) {
+        this.transformStyle = dom.style.transform
+        const tranformLeft = this.transformStyle.split('(')[1].split(')')[0]
+        const tranformTop = this.transformStyle.split('(')[2].split(')')[0]
+        this.$refs.tabs.setAttribute(
+          'style',
+          `position:relative;left:${tranformLeft};top:${tranformTop};`
+        )
+      }
     },
     // 关闭之后添加上tranfrom
     handleCardContainerClose() {
-      // safari下如果用removeAttribute移除会失效，这里把之前的定位重置会初始值
-      this.$refs.tabs.setAttribute('style', 'position:inherit;left:0;top:0;')
-      this.$refs.tabs.style.transform = this.transformStyle
-      this.$refs.baseScroll.enable()
+      // safari下如果用removeAttribute移除会失效，这里把之前的定位重置回去初始值
+      if (this.transformStyle) {
+        this.$refs.tabs.setAttribute('style', 'position:inherit;left:0;top:0;')
+        this.$refs.tabs.style.transform = this.transformStyle
+      }
     },
     scroll(e) {
       // 值必须在0，-414之间
@@ -156,7 +176,20 @@ export default {
         case 1:
           this.$router.push('/explore/origin')
           break
-        default:
+        case 2:
+          this.$router.push('/explore/word')
+          break
+        case 3:
+          this.$router.push('/explore/poem')
+          break
+        case 4:
+          this.$router.push('/explore/movie')
+          break
+        case 5:
+          this.$router.push('/explore/quotation')
+          break
+        case 6:
+          this.$router.push('/explore/lyric')
           break
       }
     },
@@ -227,24 +260,32 @@ export default {
       height 100%
       .tab
         width 100vw
+        display flex
+        flex-direction column
+        .scroll-wrapper
+          height 126px
         .explore-title
           background-color #f7f7f7
           height 126px
           normalFont()
+          width 120vw
           justify-content space-around
-          display flex
+          display inline-flex
           align-items center
           font-size 38px
           div
+            flex 1
             height 100%
-            width 100%
             center()
             color #a0a0a0
           .exploretitleclick
             color #4a4a4a
+        .explore
+          height 0
+          flex 1
 .scroll-wrapper >>> .bscroll-indicator
   background-color #a6a6a6 !important
   width 15px !important
 .scroll-wrapper >>> .bscroll-vertical-scrollbar
-  top 132px !important
+  // top 132px !important
 </style>

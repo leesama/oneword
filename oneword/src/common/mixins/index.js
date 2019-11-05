@@ -14,35 +14,7 @@ const cardContentProps = {
     isRadius: { type: Boolean }
   }
 }
-const cardFixedPropsMethods = {
-  props: {
-    cardInfo: {
-      type: Object,
-      default() {
-        return {}
-      }
-    }
-  },
-  methods: {
-    cardToClientLeft() {
-      return this.$refs.card.getBoundingClientRect().left
-    },
-    handleTap() {
-      this.$emit('cardTap', { textcardid: this.cardInfo.textcardid, width: this.$refs.card.clientWidth, height: this.$refs.card.clientHeight, left: this.$refs.card.getBoundingClientRect().left, top: this.$refs.card.getBoundingClientRect().top })
-    },
-    handleReplyClick() {
-      this.$router.push({ name: 'comment', params: { cardInfo: this.cardInfo } })
-    }
-  },
-  computed: {
-    from() {
-      return this.cardInfo.from
-    },
-    title() {
-      return this.cardInfo.title
-    }
-  }
-}
+
 const cardFooterComputed = {
   computed: {
     replycnt() {
@@ -176,8 +148,12 @@ const cardDetailPropsComputed = {
       const month = d.getMonth() + 1
       const day = d.getDay() + 1
 
-      const today = `${year}-${month.toString().length === 1 ? `0${month}` : month}-${day.toString().length === 1 ? `0${day}` : day}`
-      return today === this.cardInfo.datetime.slice(0, 10) ? this.cardInfo.datetime.slice(10, 16) : this.cardInfo.datetime.slice(5, 10)
+      const today = `${year}-${
+        month.toString().length === 1 ? `0${month}` : month
+      }-${day.toString().length === 1 ? `0${day}` : day}`
+      return today === this.cardInfo.datetime.slice(0, 10)
+        ? this.cardInfo.datetime.slice(10, 16)
+        : this.cardInfo.datetime.slice(5, 10)
     },
     username() {
       return this.cardInfo.creator.username
@@ -236,12 +212,9 @@ const pageCommon = {
       this.cardContainerVisible = false
     }
   }
-
 }
-
 export {
   cardContentProps,
-  cardFixedPropsMethods,
   cardFooterComputed,
   CardImgComputed,
   cardDetailPropsComputed,

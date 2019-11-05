@@ -1,53 +1,61 @@
 <template>
-  <base-scroll
-    :startX="90"
-    :probeType="3"
-    :listenScroll="true"
-    tap="tap"
-    :bounceTime="2500"
-    :scrollX="true"
-    @scroll="scroll"
-    :beforeScroll="true"
-    @beforeScroll="beforeScroll"
-    :scrollEnd="true"
-    @scrollEnd="scrollEnd"
-    :touchEnd="true"
-    @touchEnd="touchEnd"
-    :leftSlip="true"
-    @leftSlip="leftSlip"
-    ref="baseScroll"
-    :bounce="{right:false}"
-    :momentum="false"
-  >
-    <div class="scroll-content" ref="scroll_content">
-      <ul ref="itemlist">
-        <li v-for="(item, index) of list" :style="{height: item[0] }" ref="li" :key="index"></li>
-      </ul>
-      <div class="card_container" v-for="item of displayedData" :key="item.time.day">
-        <div class="time" ref="time">
-          <span>{{item.time.year}}</span>
-          <span>/</span>
-          <span>{{item.time.month}}</span>
-          <span>/</span>
-          <span>{{item.time.day}}</span>
+  <div class="scroll-x-cards">
+    <base-scroll
+      :startX="90"
+      :probeType="3"
+      :listenScroll="true"
+      tap="tap"
+      :bounceTime="2500"
+      :scrollX="true"
+      @scroll="scroll"
+      :beforeScroll="true"
+      @beforeScroll="beforeScroll"
+      :scrollEnd="true"
+      @scrollEnd="scrollEnd"
+      :touchEnd="true"
+      @touchEnd="touchEnd"
+      :leftSlip="true"
+      @leftSlip="leftSlip"
+      ref="baseScroll"
+      :bounce="{right:false}"
+      :momentum="false"
+    >
+      <div class="scroll-content" ref="scroll_content">
+        <ul ref="itemlist">
+          <li v-for="(item, index) of list" :style="{height: item[0] }" ref="li" :key="index"></li>
+        </ul>
+        <div class="card_container" v-for="item of cardList" :key="item.time.day">
+          <div class="time" ref="time">
+            <span>{{item.time.year}}</span>
+            <span>/</span>
+            <span>{{item.time.month}}</span>
+            <span>/</span>
+            <span>{{item.time.day}}</span>
+          </div>
+          <component
+            @cardTap="handleCardTap"
+            class="card"
+            ref="cardOriginList"
+            :cardInfo="cardItem"
+            v-for="cardItem of item.card"
+            :key="cardItem.textcardid"
+            :is="componentType(cardItem)"
+          ></component>
         </div>
-
-        <component
-          @cardTap="handleCardTap"
-          class="card"
-          ref="cardList"
-          :cardInfo="cardItem"
-          v-for="cardItem of item.card"
-          :key="cardItem.textcardid"
-          :is="componentType(cardItem)"
-        ></component>
+        <loading-ball v-show="loadingBallVisible" :changeEnd="cardEndVisible" />
       </div>
-      <loading-ball v-if="loadingBallVisible" />
-    </div>
-  </base-scroll>
+    </base-scroll>
+    <card-container
+      @back="handleBack"
+      :cardContainerData="cardOriginList"
+      :cardTapCardData="cardTapCardData"
+      v-if="cardContainerVisible"
+    ></card-container>
+  </div>
 </template>
 
 <script>
+import CardContainer from '@components/card-detail/card-detail-container/card-detail-container.vue'
 import LoadingBall from '@components/loading/loading-ball/loading-ball'
 import BaseScroll from '@components/scroll/scroll-base/scroll-base'
 import TextCard from '@components/card/card-fixed/card-fixed-text/card-fixed-text'
@@ -80,7 +88,9 @@ export default {
         [SHORT_LINE_HEIGHT, 45, 12, 55, -5]
       ],
       loadingBallVisible: false,
-      displayedData: []
+      cardOriginList: [],
+      cardEndVisible: false,
+      cardContainerVisible: false
     }
   },
   props: {
@@ -89,10 +99,8 @@ export default {
       default() {
         return []
       }
-    },
-    containerCardIndex: { type: Number, default: 0 }
+    }
   },
-
   mounted() {
     // 加载后禁止scroll
     this.fixedScroll()
@@ -104,6 +112,11 @@ export default {
     this.liBgcolorFixedChange()
     // 当前卡片索引
     this.cardIndex = 0
+  },
+  activated() {
+    if (!this.fixedBeginTime) {
+      this.baseScroll.refresh()
+    }
   },
   methods: {
     // 从下至上li颜色每50毫秒变化一个  第一次加载li位置是正确排列的，从下至上直接变化就行了
@@ -148,7 +161,6 @@ export default {
     },
     scroll(e) {
       let x = e.x
-
       if (x > 0) {
         // scroll左侧动画
         // 之前考虑在beforestart中缓存dom就能确保scroll时dom能缓存好，但是这样每次滑动都会重新计算，影响性能
@@ -162,14 +174,6 @@ export default {
             this.clearLiBgcolor()
           })
         }
-        // 快速滑动判断 begin
-        if (this.locked) {
-          // 如果加锁了，直接返回    如果 x大于60.将锁取消，之后就会走执行动画的逻辑
-          if (x > scrollX) {
-            this.locked = false
-          }
-          return
-        }
         // 如果滚动时间小于300ms,不传递scroll的值到动画
         // this.scrollBeginTime 有值说明还没有触发快速滑动
         if (
@@ -177,8 +181,6 @@ export default {
           new Date().getTime() - this.scrollBeginTime < 300 &&
           x >= 40
         ) {
-          // 如果滚动的距离大于scrollX，加锁
-          this.locked = true
           // 把this.scrollBeginTime null作为标记,防止多次触发
           this.scrollBeginTime = null
           this.baseScroll.disable()
@@ -191,7 +193,6 @@ export default {
         // 快速滑动判断 end
 
         this.animateByScroll(x)
-      } else if (x < 0) {
       }
 
       // scroll右侧动画
@@ -201,20 +202,17 @@ export default {
       this.scrollBeginTime = new Date().getTime()
     },
     scrollEnd(e) {
-      // scrollEnd的时候的e.x值，就是下次scroll的时候的x坐标值
+      const x = e.x
       this.scrollStartX = e.x
-
-      // 持续的动画执行时，会disable scroll,当scroll结束时，让其启用
-      if (!this.baseScroll.isEnabled()) {
-        this.baseScroll.enable()
+      // 滚动结束，标记动画结束
+      // 持续的动画执行时，会disable scroll,当scroll结束时，让其启用,刷新scroll
+      if (x === 0 && !this.baseScroll.scroll.enabled) {
         this.clearLiBgcolor()
-        // 设置颜色
-      }
-      // 如果数据改变了，刷新bs,必须等到滚动动画执行完毕时再刷新，否则页面会卡住  （scrollEnd就是滚动动画完毕时）
-      if (this.dataChanged) {
+        this.baseScroll.enable()
         this.baseScroll.refresh()
-        this.dataChanged = false
       }
+      // scrollEnd的时候的e.x值，就是下次scroll的时候的x坐标值
+
       this.items = null
     },
     touchEnd(e) {
@@ -242,26 +240,31 @@ export default {
           this.scrollToCardByIndex(this.cardIndex)
         } else if (offsetX < -this.vw / 4) {
           // 左拖动
+
           const scrollN = this.cardIndex + 1
           this.cardIndex =
             scrollN > this.cardMaxIndex ? this.cardMaxIndex : scrollN
           this.scrollToCardByIndex(this.cardIndex)
+        } else if (-this.vw / 4 < offsetX < this.vw / 4) {
+          this.scrollToCardByIndex(this.cardIndex)
         } else {
-          // 其他情况滚动回原位置
+          // 其他情况 (用户在滑动过程中点击)
           for (let i = 0; i < this.cardMaxIndex; i++) {
-            const cardToClientLeft = this.cardDomList[i].cardToClientLeft()
+            const cardToClientLeft = this.cardDomList[i].getBoundingClientRect()
+              .left
+
+            // 如果某个卡片距离浏览器左端的距离大于0小于视窗的一半,滚动到该卡片
             if (cardToClientLeft > 0 && cardToClientLeft <= this.vw / 2) {
               this.cardIndex = i
-              this.scrollToCardByIndex(i)
+              this.scrollToCardByIndex(this.cardIndex)
               return
             }
             if (cardToClientLeft > this.vw / 2 && cardToClientLeft <= this.vw) {
-              this.cardIndex = i
-              this.scrollToCardByIndex(i - 1)
+              this.cardIndex = i - 1
+              this.scrollToCardByIndex(this.cardIndex)
               return
             }
           }
-          this.scrollToCardByIndex(this.cardIndex)
         }
       }
       // 触发刷新事件
@@ -272,13 +275,13 @@ export default {
       }
     },
     scrollToCardByIndex(index, time = 700) {
-      this.baseScroll.scrollToElement(this.cardDomList[index].$el, time, true)
+      this.baseScroll.scrollToElement(this.cardDomList[index], time, true)
     },
     // 根据scroll值进行动画
     animateByScroll(val) {
-      this.$nextTick(() => {
-        // 小于5不执行动画，是为了防止执行动画时dom还没有缓存好而报错，给一定的缓冲时间
-        // 遍历每一条li,每一条li应该移动的参数和list数组的每一项对应
+      // 小于5不执行动画，是为了防止执行动画时dom还没有缓存好而报错，给一定的缓冲时间
+      // 遍历每一条li,每一条li应该移动的参数和list数组的每一项对应
+      this.items &&
         this.items.forEach((item, index) => {
           const rate = val / (40 + (this.list[index][2] / 13) * 20)
           // 动画的项需要移动的x轴距离
@@ -322,7 +325,6 @@ export default {
             })
           }
         })
-      })
     },
     // 固定的滚动距离
     fixedScroll() {
@@ -331,10 +333,13 @@ export default {
       this.baseScroll.disable()
       this.fixedBeginTime = new Date().getTime()
     },
-    // 监听到左滑，触发左滑时间到上级组件，并显示loadingball
+    // 监听到左滑，触发左滑事件到上级组件，并显示loadingball
     leftSlip() {
-      this.$emit('leftSlip')
-      this.loadingBallVisible = true
+      this.$emit(
+        'leftSlip',
+        this.cardOriginList[this.cardOriginList.length - 1].datetime
+      )
+      this.leftSlipping = true
     },
     componentType(cardInfo) {
       return cardInfo.category === '2000' ? 'MusicCard' : 'TextCard'
@@ -342,7 +347,8 @@ export default {
 
     cacheDom() {
       this.$nextTick(() => {
-        this.cardDomList = this.$refs.cardList
+        this.cardDomList = Array.from(document.querySelectorAll('.card'))
+        this.cardDomList.push(document.querySelector('.endball'))
         this.cardMaxIndex = this.cardDomList.length - 1
         if (!this.vw) {
           this.vw = window.innerWidth
@@ -350,7 +356,18 @@ export default {
       })
     },
     handleCardTap(i) {
-      this.$emit('cardTap', i)
+      this.cardTapCardData = i
+      this.cardContainerVisible = true
+      // 这里需要把bs禁用掉，之后在开启，否则有概率无法移除transform样式
+      this.$refs.baseScroll.disable()
+      // this.$emit('cardTap', i)
+    },
+    handleBack(i) {
+      this.$refs.baseScroll.enable()
+      this.containerCardIndex = i
+      this.cardContainerVisible = false
+      this.cardIndex = i
+      this.scrollToCardByIndex(i, 0)
     },
     disable() {
       this.baseScroll.disable()
@@ -359,78 +376,130 @@ export default {
       this.baseScroll.enable()
     }
   },
+
+  computed: {
+    // 根据时间格式化数据
+    cardList() {
+      const newData = []
+      const map = {}
+      for (const i of this.cardOriginList) {
+        const time = i.datetime.substring(0, 10)
+        if (!map[time]) {
+          newData.push({
+            time,
+            card: [i]
+          })
+          map[time] = true
+        } else {
+          for (const j of newData) {
+            if (j.time === time) {
+              j.card.push(i)
+              break
+            }
+          }
+        }
+      }
+      for (const i of newData) {
+        const itime = i.time
+        i.time = {
+          year: itime.substr(0, 4),
+          month: itime.substr(5, 2),
+          day: itime.substr(8, 2)
+        }
+      }
+      return newData
+    }
+  },
   watch: {
+    // 这里为了让加载有个延迟的动画效果，使用了一个中间数据cardOriginList
     // data改变时缓存dom和一些信息用于滑动动画
-    data() {
+    data(newVal) {
+      // 如果新的数据的长度比之前的数据长度小n条，因为后端传过来的数据是n条一次的，小于n条就表示没有数据了，这时取消左滑事件，显示end
       // 左滑
-      if (this.loadingBallVisible) {
-        this.displayedData = this.data
-        this.$nextTick(() => {
-          this.cardDomList = this.$refs.cardList
-          this.cardMaxIndex = this.cardDomList.length - 1
-          this.baseScroll.leftSlipfinish()
-          setTimeout(() => {
+      if (this.leftSlipping) {
+        // 如果传入的的数据的长度小于3，显示end,关闭左拉
+        this.leftSlipping = null
+        if (newVal.length - this.cardOriginList.length < 10) {
+          this.cardOriginList = newVal
+          this.cardEndVisible = true
+          this.$nextTick(() => {
+            this.cardDomList = Array.from(document.querySelectorAll('.card'))
+            this.cardDomList.push(document.querySelector('.endball'))
+            this.cardMaxIndex = this.cardDomList.length - 1
             this.baseScroll.refresh()
-          }, 20)
-          this.loadingBallVisible = false
-        })
+            this.baseScroll.leftSlipClose()
+          })
+        } else {
+          this.cardOriginList = newVal
+          this.$nextTick(() => {
+            this.cardDomList = Array.from(document.querySelectorAll('.card'))
+            this.cardDomList.push(document.querySelector('.endball'))
+            this.cardMaxIndex = this.cardDomList.length - 1
+            this.baseScroll.refresh()
+            this.baseScroll.leftSlipfinish()
+          })
+        }
       } else {
         // 刷新
-        this.dataChanged = true
-        // 第一次加载数据如果获取时间小于500毫米，会延迟一定时间，使数据显示用时达到500ms
+        // 第一次加载数据如果获取时间小于600毫秒，会延迟一定时间，使数据显示用时达到500ms
+        // fixedBeginTime有值，标志这是第一次加载数据
+        this.baseScroll.leftSlipOpen()
+        this.cardEndVisible = false
         if (this.fixedBeginTime) {
           const dateRequestTime = new Date().getTime() - this.fixedBeginTime
           if (dateRequestTime < 600) {
             setTimeout(() => {
-              this.displayedData = this.data
+              this.loadingBallVisible = true
+              this.cardOriginList = newVal
               this.cacheDom()
               this.baseScroll.scrollTo(0, 0, 2000)
             }, 600 - dateRequestTime)
           } else {
-            this.displayedData = this.data
+            this.loadingBallVisible = true
+            this.cardOriginList = newVal
             this.cacheDom()
             this.baseScroll.scrollTo(0, 0, 2000)
           }
           this.fixedBeginTime = null
         } else {
           // 右滑刷新
-          this.displayedData = this.data
+          this.cardOriginList = newVal
           this.cacheDom()
         }
       }
-    },
-    // 监听到containerCardIndex后，修改index
-    containerCardIndex(newVal) {
-      this.cardIndex = newVal
-      this.scrollToCardByIndex(newVal, 0)
     }
   },
   components: {
     BaseScroll,
     LoadingBall,
     TextCard,
-    MusicCard
+    MusicCard,
+    CardContainer
   }
 }
 </script>
 <style lang='stylus' scoped>
+.scroll-x-cards
+  display inline-flex
+  align-items center
+  height 100%
 .scroll-content
   display inline-flex
   align-items center
   height 100%
 ul
   width 250px
-  margin-left -250px
+  margin-left -200px
   display grid
   grid-template-columns 5px
   grid-template-rows repeat(13, 1fr)
   align-items center
-li
-  will-change transform
-  opacity 0
-  background #888888
-  width 5px
-  border-radius 1px
+  li
+    will-change transform
+    opacity 0
+    background #888888
+    width 5px
+    border-radius 1px
 .card_container
   display inline-flex
   align-items center

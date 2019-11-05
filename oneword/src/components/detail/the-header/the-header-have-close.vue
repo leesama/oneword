@@ -13,7 +13,7 @@
       </span>
     </template>
     <template #right>
-      <span @click="handleRightClick">
+      <span @click="handleRightClick" v-if="right">
         <slot name="right">完成</slot>
       </span>
     </template>
@@ -24,7 +24,10 @@
 import TheHeader from '@components/detail/the-header/the-header'
 export default {
   name: 'the-header-have-close',
-  props: { transparent: { type: Boolean, default: true } },
+  props: {
+    transparent: { type: Boolean, default: true },
+    right: { type: Boolean, default: true }
+  },
   methods: {
     handleLeftClick() {
       this.$emit('close')

@@ -1,17 +1,28 @@
 <template>
-  <div class="mine" v-if="userInfo.user" ref="mine">
-    <the-header ref="header" />
+  <div class="mine" v-if="userInfo" ref="mine">
+    <the-header ref="header">
+      <template #right>
+        <span class="exit" @click="handleExit">退出登录</span>
+      </template>
+    </the-header>
     <scroll-y
       class="scroll"
       :scrollBar="false"
-      :showLodingBall="false"
+      :pullDown="true"
+      @pullDown="handlePullDown"
+      :firstLoadPullDown="false"
       ref="scroll"
-      :showLoading="false"
     >
       <div class="main" ref="main">
         <div class="userinfo">
           <div class="picandname">
-            <base-img :src="userInfo.user.smallavatar" class="img" @tap.native="handleIntroTap" />
+            <base-img
+              :src="userInfo.user.smallavatar"
+              class="img"
+              @tap.native="handleIntroTap"
+              v-if="userInfo.user.smallavatar"
+            />
+            <div class="noimg" v-else @tap="handleIntroTap" />
             <div class="name">
               <span>{{userInfo.user.username}}</span>
             </div>
@@ -55,15 +66,16 @@
           </div>
           <div class="wordsnameblock">
             <div v-for="item in userInfo.booklist" :key="item.bookid">
-              <p>
+              <img :src="item.picpath" alt />
+              <p class="bookname" :class="{wordcolor:item.picpath}">
                 <span>{{item.bookname}}</span>
               </p>
-              <p>
+              <p class="cardcnt" :class="{wordcolor:item.picpath}">
                 <span>{{item.cardcnt?item.cardcnt:0}}</span>字句
               </p>
             </div>
-            <div @tap="handleNewWork">
-              <p>
+            <div @tap="handleOpenNewBook">
+              <p class="bookname">
                 <span>新建文集</span>
               </p>
             </div>
@@ -71,209 +83,117 @@
         </div>
       </div>
     </scroll-y>
-    <toast
+    <drawer
       class="toast"
-      :toastVisible="toastVisible"
-      @cancel="handleCancelToast"
-      @toastClick="handleToastClick"
-      :toastInfo="toastInfo"
+      :visible="drawerVisible"
+      @cancel="handleCancelDrawer"
+      @click="handleDrawerClick"
+      :drawerInfo="drawerInfo"
       ref="toast"
     />
+    <edit-user-info
+      :visible="editUserInfoVisible"
+      :userInfo="userInfo.user"
+      @update="handleUpdatedUserInfo"
+      @close="handleCloseUserInfo"
+    />
 
-    <transition
-      name="edit-transition"
-      @before-enter="editTransitionBeforeEnter"
-      @enter="editTransitionEnter"
-      @before-leave="editTransitionBeforeLeave"
-    >
-      <div class="edit-userinfo" v-if="editUserInfoMaskVisible">
-        <header-has-close @close="handleCloseEditUser" />
-        <base-img
-          :src="userInfo.user.smallavatar"
-          class="edit-userinfo-img"
-          @click.native="handleEditImgClick"
-        />
-        <input
-          ref="imgInput"
-          type="file"
-          accept="image/*"
-          @change="handleUploadImgSelect"
-          style="display:none;"
-        />
-        <input v-model="userInfo.user.username" />
-        <textarea v-model="userInfo.user.intro" ref="textarea" />
-        <image-clipper
-          :img="uploadImg"
-          v-if="imageClipperVisible"
-          @cancel="handleCancelImageClip"
-          @ok="handleOkImageClip"
-        ></image-clipper>
-      </div>
-    </transition>
-    <transition
-      name="edit-transition"
-      @before-enter="newWorkTransitionBeforeEnter"
-      @enter="newWorkTransitionEnter"
-      @before-leave="newWorkTransitionBeforeLeave"
-    >
-      <div v-if="newWorkVisible" class="new-work">
-        <header-has-close @close="handleCloseNewWork" />
-        <div class="new-work-main" @click="handleAddCover">
-          <p>
-            <span>文集封面图</span>
-            <span>(可无)</span>
-          </p>
-        </div>
-        <input
-          ref="coverInput"
-          type="file"
-          accept="image/*"
-          @change="handleCoverImgSelect"
-          style="display:none;"
-        />
-        <image-clipper
-          :img="coverUploadImg"
-          v-if="coverImageClipperVisible"
-          @cancel="handleCancelCoverImageClip"
-          @ok="handleOkCoverImageClip"
-        ></image-clipper>
-        <input ref="newWorkinput" type="text" placeholder="新文集名" />
-      </div>
-    </transition>
+    <new-book
+      :visible="newBookVisible"
+      :bookList="userInfo.booklist"
+      @update="handleUpdatedNewBook"
+      @close="handleCloseNewBook"
+    />
   </div>
 </template>
 
 <script>
-import HeaderHasClose from '@components/detail/the-header/the-header-have-close.vue'
-import ImageClipper from '@components/imageclipper/imageClipper.vue'
-import Toast from '@components/toast/toast.vue'
+import cookies from 'vue-cookies'
+import Drawer from '@components/drawer/drawer'
 import TheHeader from '@components/detail/the-header/the-header.vue'
 import ScrollY from '@components/scroll/scroll-y/scroll-y.vue'
-import { getUserinfoAndBooklist } from '@models'
-import { reader } from '@js/utils.js'
+import { exit } from '@models'
+import { vuexMethondAndGetter } from '@mixins/userinfoVuex.js'
+import EditUserInfo from './edit-userinfo.vue'
+import NewBook from '../newbook/newbook.vue'
 import BaseImg from '@components/card/card-base/card-base-img/card-base-img.vue'
 export default {
   name: 'mine',
+  mixins: [vuexMethondAndGetter],
   data() {
     return {
-      userInfo: {},
-      toastVisible: false,
-      toastInfo: ['编辑资料'],
-      editUserInfoMaskVisible: false,
-      username: '',
-      userIntro: '',
-      imageClipperVisible: false,
-      uploadImg: '',
-      newWorkVisible: false,
-      coverImageClipperVisible: false,
+      isActivated: true,
+      drawerInfo: ['编辑资料'],
+      drawerVisible: false,
+      editUserInfoVisible: false,
+      newBookVisible: false,
       coverUploadImg: ''
     }
   },
-  async created() {
-    this.userInfo = await getUserinfoAndBooklist()
-  },
-  updated() {
-    this.$refs.scroll.refreshAfterAnimation()
-  },
   methods: {
     handleIntroTap() {
-      this.toastVisible = true
+      this.drawerVisible = true
+      // 设置要修改的数据的值，与数据初始值一致
+      this.uploadImg = this.userInfo.user.smallavatar
+      this.uploadUserName = this.userInfo.user.username
+      this.uploadIntro = this.userInfo.user.intro
     },
-    handleToastClick() {
-      // this.toastVisible = false
-      this.editUserInfoMaskVisible = true
+    handleDrawerClick() {
+      this.editUserInfoVisible = true
     },
-    handleCancelToast() {
-      this.toastVisible = false
+    handleCancelDrawer() {
+      this.drawerVisible = false
     },
-    // edit transition begin
-    editTransitionBeforeEnter() {
-      this._handleDomForTransition()
-      this.$refs.toast.$el.childNodes[0].style.filter = 'blur(10px)'
-      this.$refs.toast.$el.childNodes[1].style.filter = 'blur(10px)'
+    handleUpdatedUserInfo(info) {
+      const { smallavatar, username, intro } = info
+      this.userInfo.user.username = username
+      this.userInfo.user.smallavatar = smallavatar
+      this.userInfo.user.intro = intro
+      this.editUserInfoVisible = false
+      this.drawerVisible = false
+      // 更新store
+      this.setUserInfoAndBookList(this.userInfo)
     },
-    editTransitionEnter() {
-      this.$refs.textarea.focus()
+    handleCloseUserInfo() {
+      this.editUserInfoVisible = false
+      this.drawerVisible = false
     },
-    editTransitionBeforeLeave() {
-      this._handleDomAfterTransition()
-      this.$refs.toast.$el.childNodes[0].removeAttribute('style')
-      this.$refs.toast.$el.childNodes[1].removeAttribute('style')
-      this.toastVisible = false
+    handleOpenNewBook() {
+      this.newBookVisible = true
     },
-    // edit transition end
-    // new work transition begin
-    newWorkTransitionBeforeEnter() {
-      document.querySelector('.detail-footer').style.filter = 'blur(10px)'
-      this._handleDomForTransition()
+    handlePullDown() {
+      this.$refs.scroll.finishPullDown()
     },
-    newWorkTransitionEnter() {
-      this.$refs.newWorkinput.focus()
+    handleCloseNewBook() {
+      this.newBookVisible = false
     },
-    newWorkTransitionBeforeLeave() {
-      this._handleDomAfterTransition()
-      document.querySelector('.detail-footer').removeAttribute('style')
-    },
-    // new work transition end
-    _handleDomForTransition() {
-      this.$refs.scroll.$el.style.filter = 'blur(10px)'
-      this.$refs.header.$el.style.filter = 'blur(10px)'
-    },
-    _handleDomAfterTransition() {
-      this.$refs.scroll.$el.removeAttribute('style')
-      this.$refs.header.$el.removeAttribute('style')
-    },
-    handleCloseEditUser() {
-      this.editUserInfoMaskVisible = false
-    },
-    handleEditImgClick() {
-      this.$refs.imgInput.click()
-    },
-    handleUploadImgSelect(e) {
-      reader(e.target.files[0]).then(({ result }) => {
-        this.uploadImg = result
-        this.imageClipperVisible = true
-        // 清除input的值，这样重新选择一样的文件也可以触发input change事件
-        this.$refs.imgInput.value = ''
+    handleUpdatedNewBook() {
+      this.newBookVisible = false
+      this.$nextTick(() => {
+        this.$refs.scroll.refresh()
       })
     },
-    handleCancelImageClip() {
-      this.imageClipperVisible = false
-    },
-    handleOkImageClip(data) {
-      this.imageClipperVisible = false
-    },
-    handleNewWork() {
-      this.newWorkVisible = true
-    },
-    handleCloseNewWork() {
-      this.newWorkVisible = false
-    },
-    handleAddCover() {
-      this.$refs.coverInput.click()
-    },
-    handleCoverImgSelect(e) {
-      reader(e.target.files[0]).then(({ result }) => {
-        this.coverUploadImg = result
-        this.coverImageClipperVisible = true
-        this.$refs.coverInput.value = ''
-      })
-    },
-    handleCancelCoverImageClip() {
-      this.coverImageClipperVisible = false
-    },
-    handleOkCoverImageClip(data) {
-      this.coverImageClipperVisible = false
-      console.log(data)
+    async handleExit() {
+      const { code } = await exit()
+      if (code === 0) {
+        cookies.remove('oneword')
+        cookies.remove('oneword.sig')
+        this.$toastMessage('退出成功')
+        // 刷新页面来清除之前页面的数据
+        this.$store.dispatch('resetState')
+        this.$router.push('/login')
+      } else {
+        this.$toastMessage('退出失败,请重试')
+      }
     }
   },
   components: {
     BaseImg,
     ScrollY,
     TheHeader,
-    Toast,
-    ImageClipper,
-    HeaderHasClose
+    Drawer,
+    EditUserInfo,
+    NewBook
   }
 }
 </script>
@@ -282,7 +202,10 @@ export default {
 .mine
   normalFont()
   display flex
+  filled()
   flex-direction column
+  .exit
+    font-size 48px
   .toast >>>.mask
     top 0
   &>.detail-header
@@ -298,6 +221,22 @@ export default {
       margin-left 65px
       .picandname
         leftcenter()
+        .img
+          margin-top 20px
+          box-shadow 0 0 50px #e8e8e8
+          border-radius 50%
+          width 205px
+          margin-right 30px
+          & >>> .radius
+            height 205px
+            width 205px
+        .noimg
+          margin-top 20px
+          box-shadow 0 0 50px #e8e8e8
+          border-radius 50%
+          width 205px
+          height 205px
+          margin-right 30px
         .name
           font-size 50px
           font-weight bold
@@ -327,12 +266,6 @@ export default {
             font-weight bolder
         p:first-child
           margin-right 75px
-      & >>> .radius
-        height 205px
-        width 205px
-      & .img
-        width 205px
-        margin-right 30px
     .book-list
       margin 0px 0 40px 0
       .split-line
@@ -376,11 +309,21 @@ export default {
           border-radius 10px
           color #4a4a4a
           background-color #f2f2f2
-          p:first-child
+          img
+            position absolute
+            top 0
+            left 0
+            right 0
+            bottom 0
+            width 100%
+          .wordcolor
+            color #fefefe
+          &>.bookname
+            position absolute
             font2()
             font-weight bold
             font-size 45px
-          p:nth-child(2)
+          &>.cardcnt
             font-size 30px
             position absolute
             bottom 30px
@@ -391,89 +334,6 @@ export default {
             margin-left 2vw
           &:nth-child(even)
             margin-right 2vw
-  .edit-userinfo
-    position fixed
-    width 100vw
-    height 100vh
-    left 0
-    top 0
-    z-index 50
-    display flex
-    flex-direction column
-    .header
-      display flex
-      justify-content space-between
-      span
-        center()
-        padding-right 55px
-        color #4779a7
-        font-size 45px
-    .edit-userinfo-img
-      width 205px
-      height 205px
-      margin-left 50px
-      margin-top 50px
-      margin-bottom 80px
-      & >>> .radius
-        height 205px
-        width 205px
-    input
-      margin-left 55px
-      margin-right 55px
-      margin-bottom 100px
-      background-color transparent
-      color #2f2f2f
-      font-size 45px
-    textarea
-      margin-left 55px
-      margin-right 55px
-      height 1000px
-      background-color transparent
-      color #2f2f2f
-      font-size 45px
-  .new-work
-    position fixed
-    width 100vw
-    height 100vh
-    left 0
-    top 0
-    z-index 50
-    .header
-      display flex
-      justify-content space-between
-      span
-        center()
-        padding-right 55px
-        color #4779a7
-        font-size 45px
-    .new-work-main
-      box-shadow 0 0 50px #c4c4c4
-      margin 0 auto
-      margin-top 300px
-      height 360px
-      width 360px
-      margin-bottom 90px
-      center()
-      p
-        display flex
-        align-items center
-        flex-direction column
-        font-size 40px
-        font2()
-        font-weight bold
-        color #555555
-        span:last-child
-          margin-top 20px
-    input
-      text-align center
-      font2()
-      background-color transparent
-      caret-color #376cf3
-      width 100%
-      box-sizing border-box
-      padding-left 50px
-      padding-right 50px
-      font-size 50px
 .edit-transition-enter
   opacity 0
 .edit-transition-enter-active

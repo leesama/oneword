@@ -11,52 +11,46 @@
       </the-header>
     </header>
     <scroll-x
+      class="scroll"
       ref="scroll"
-      class="crosstime-scroll"
-      :data="list"
+      :data="crosstimeCardInfo"
       @refresh="loadData"
       @leftSlip="loadLeftSlipData"
-      @cardTap="handleCardTap"
-      :containerCardIndex="containerCardIndex"
     />
-    <card-container
-      @back="handleBack"
-      cardClassName=".crosstime-scroll .card-container"
-      scrollContentClassName=".crosstime-scroll .scroll-content"
-      :cardContainerData="cardContainerData"
-      :cardTapCardData="cardTapCardData"
-      v-if="cardContainerVisible"
-    ></card-container>
   </div>
 </template>
 
 <script>
-import CardContainer from '@components/card-detail/card-detail-container/card-detail-container'
-import { formatTo1Level } from '@js/utils.js'
+import { mapMutations, mapGetters } from 'vuex'
 import TheHeader from '@components/detail/the-header/the-header.vue'
 import ScrollX from '@components/scroll/scroll-x/scroll-x'
-import { getCards } from '@models'
-import { pageCommon } from '@mixins'
+import { getFeeds } from '@models'
+
 export default {
   name: 'crosstime',
-  mixins: [pageCommon],
   created() {
     this.loadData()
   },
   methods: {
+    ...mapMutations({ setCardInfo: 'SET_CARDS_INFO' }),
     async loadData() {
-      this.list = (await getCards()).slice(0, 3)
-      this.cardContainerData = formatTo1Level(this.list)
-      this.day = 3
+      const data = (await getFeeds()).data.textcardlist
+      // 数据存入vuex
+      this.setCardInfo({
+        type: 'crosstime',
+        info: data
+      })
     },
-    async loadLeftSlipData() {
-      const nextDay = this.day + 3
-      this.list = this.list.concat((await getCards()).slice(this.day, nextDay))
-      this.cardContainerData = formatTo1Level(this.list)
-      this.day = nextDay
+    async loadLeftSlipData(datetime) {
+      const data = (await getFeeds({ datetime })).data.textcardlist
+      this.setCardInfo({
+        type: 'crosstime',
+        info: this.crosstimeCardInfo.concat(data)
+      })
     }
   },
-  components: { TheHeader, ScrollX, CardContainer }
+  computed: { ...mapGetters(['crosstimeCardInfo']) },
+  components: { TheHeader, ScrollX }
 }
 </script>
 <style lang='stylus' scoped>

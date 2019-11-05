@@ -30,13 +30,9 @@ export default {
   height 100%
   overflow hidden
   img
-    object-fit cover
     width 100%
-    height 100%
-    transition all 0.3s
   .radius
     border-radius 50%
     height 433px
     width 433px
-    transition all 0.3s
 </style>

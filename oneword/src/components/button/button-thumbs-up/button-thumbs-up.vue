@@ -1,5 +1,5 @@
 <template>
-  <span class="button" :class="like?'active':''" @click.stop="handleClick">
+  <span class="button" :class="like?'active':''" @tap.stop="handleClick">
     <span>{{number}}</span>
     <i class="iconfont">&#xe608;</i>
   </span>
@@ -9,7 +9,7 @@
 export default {
   name: 'button-thumbs-up',
   props: {
-    number: { type: String },
+    number: { type: Number },
     like: { type: Boolean, default: false }
   },
   methods: {
@@ -22,7 +22,9 @@ export default {
 <style lang='stylus' scoped>
 @import '~@common/stylus/mixins.styl'
 .button
-  padding-bottom 20px
+  padding 40px
+  margin-top -40px
+  padding-top 40px
   display flex
   flex-direction row
   & > span

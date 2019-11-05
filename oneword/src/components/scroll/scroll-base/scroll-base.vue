@@ -7,9 +7,14 @@
 <script>
 import BScroll from '@better-scroll/core'
 import ScrollBar from '@better-scroll/scroll-bar'
-import Pullup from '@better-scroll/pull-up'
+import PullUp from '@better-scroll/pull-up'
+import PullDown from '@better-scroll/pull-down'
+import NestedScroll from '@better-scroll/nested-scroll'
+
+BScroll.use(NestedScroll)
 BScroll.use(ScrollBar)
-BScroll.use(Pullup)
+BScroll.use(PullUp)
+BScroll.use(PullDown)
 export default {
   name: 'scroll-base',
   props: {
@@ -71,13 +76,7 @@ export default {
       type: Array,
       default: null
     },
-    /**
-     * 是否派发顶部下拉的事件，用于下拉刷新
-     */
-    pulldown: {
-      type: Boolean,
-      default: false
-    },
+
     /**
      * 是否派发右侧拉动的事件，用于右拉加载
      */
@@ -120,10 +119,7 @@ export default {
       default: 0
     },
     bounce: {
-      type: Object,
-      default() {
-        return {}
-      }
+      type: [Object, Boolean]
     },
     leftSlip: {
       type: Boolean,
@@ -147,7 +143,14 @@ export default {
       type: Boolean,
       default: false
     },
-    pullUpLoad: {
+    pullUp: {
+      type: Boolean,
+      default: false
+    },
+    /**
+     * 是否派发顶部下拉的事件，用于下拉刷新
+     */
+    pullDown: {
       type: Boolean,
       default: false
     },
@@ -158,7 +161,8 @@ export default {
     momentumLimitDistance: {
       type: Number,
       default: 15
-    }
+    },
+    nestedScroll: { type: Boolean, default: false }
   },
   mounted() {
     // 保证在DOM渲染完毕后初始化better-scroll
@@ -190,7 +194,12 @@ export default {
         momentumLimitDistance: this.momentumLimitDistance,
         preventDefaultException: this.preventDefaultException,
         scrollbar: this.scrollBar,
-        pullUpLoad: this.pullUpLoad,
+        pullUpLoad: this.pullUp,
+        nestedScroll: this.nestedScroll,
+        pullDownRefresh: {
+          threshold: 110,
+          stop: 100
+        },
         directionLockThreshold: this.directionLockThreshold
       })
       // 是否派发滚动事件
@@ -203,48 +212,44 @@ export default {
       if (this.leftSlip) {
         this.watching = false
         this.watch = function() {
-          // watching是pullingUp 事件的标识，如果wathching有值，说明还在监听pullingup事件中，直接返回
+          // watching是leftSlip事件的标识，如果wathching有值，说明还在监听pullingup事件中，直接返回
           if (this.watching) {
             return
           }
           // 如果没值，赋值为真，监听滚动事件
           this.watching = true
-          this.scroll.on('scroll', check, this)
+
+          this.scroll.on('scroll', this.check, this)
         }
-        const check = function(pos) {
+        this.check = function(pos) {
           if (
             this.scroll.movingDirectionX === 1 &&
-            pos.x <= this.scroll.maxScrollX + 20
+            pos.x <= this.scroll.maxScrollX + 50
           ) {
-            // 滚动结束后修改触发标识，不再监听pullingup事件，ps:不再监听pullingup事件之后才再次监听 这里不直接在scrollEnd后再次监听事件是因为触发pullingUp后，会执行异步操作，执行leftSlipfinish后再次触发
-            this.scroll.once('scrollEnd', watching => {
+            // 滚动结束后修改触发标识，不再监听leftSlip事件，ps:不再监听leftSlip事件之后才再次监听 这里不直接在scrollEnd后再次监听事件是因为触发leftSlip后，会执行异步操作，执行leftSlipfinish后再次触发
+            this.scroll.once('scrollEnd', () => {
               this.watching = false
             })
             // 触发下拉事件
             this.$emit('leftSlip')
-            // 不再执行scroll触发的check方法，也就是说之后不会再触发pullingUp
-            this.scroll.off('scroll', check)
+            this.scroll.off('scroll', this.check)
           }
         }
 
         this.watch()
       }
       // 是否派发滚动到底部事件，用于上拉加载
-      if (this.pullUpLoad) {
+      if (this.pullUp) {
         this.scroll.on('pullingUp', () => {
-          this.$emit('pullingUp')
+          this.$emit('pullUp')
         })
       }
       // 是否派发顶部下拉事件，用于下拉刷新
-      if (this.pulldown) {
-        this.scroll.on('touchend', pos => {
-          // 下拉动作
-          if (pos.y > 50) {
-            this.$emit('pulldown')
-          }
+      if (this.pullDown) {
+        this.scroll.on('pullingDown', () => {
+          this.$emit('pullDown')
         })
       }
-
       // 是否派发列表滚动开始的事件
       if (this.beforeScroll) {
         this.scroll.on('beforeScrollStart', () => {
@@ -279,6 +284,7 @@ export default {
     isEnabled() {
       return this.scroll.enabled
     },
+
     destroy() {
       this.scroll && this.scroll.destroy()
     },
@@ -306,6 +312,31 @@ export default {
       } else {
         this.watch()
       }
+    },
+    leftSlipClose() {
+      if (!this.watching) {
+        return
+      }
+      this.watching = false
+      this.scroll.off('scroll', this.check)
+    },
+    leftSlipOpen() {
+      this.watch()
+    },
+    finishPullUp() {
+      this.scroll.finishPullUp()
+    },
+    openPullUp() {
+      this.scroll.openPullUp()
+    },
+    closePullUp() {
+      this.scroll.closePullUp()
+    },
+    off(event) {
+      this.scroll.off(event)
+    },
+    finishPullDown() {
+      this.scroll.finishPullDown()
     }
   },
   watch: {

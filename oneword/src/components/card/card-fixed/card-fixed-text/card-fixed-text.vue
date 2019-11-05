@@ -4,7 +4,6 @@
       <header class="textheader" @tap="handleTap">
         <card-img :src="imgSrc" v-if="imgSrc" :radius="isRadius" />
       </header>
-
       <main @tap="handleTap">
         <component
           :isRadius="isRadius"
@@ -23,19 +22,17 @@
           :replycnt="replycnt"
           :collectcnt="collectcnt"
           :likecnt="likecnt"
+          :liked="liked"
           @replyClick="handleReplyClick"
+          @likeClick="handleLikeClick"
         />
       </footer>
     </div>
   </div>
 </template>
 <script>
-import {
-  cardFixedPropsMethods,
-  cardFooterComputed,
-  CardImgComputed,
-  CardTextComputed
-} from '@mixins'
+import { cardFooterComputed, CardImgComputed, CardTextComputed } from '@mixins'
+import { cardCommon } from '@mixins/cardCommon.js'
 import CardImg from '@components/card/card-base/card-base-img/card-base-img'
 import CardFooter from '@components/card/card-base/card-base-footer/card-base-footer'
 import CardInfo from '@components/card/card-base/card-base-info/card-base-info'
@@ -45,12 +42,7 @@ const CardHorizontalContent = () =>
   import('@components/card/card-base/card-base-content-horizontal/card-base-content-horizontal')
 export default {
   name: 'card-fixed',
-  mixins: [
-    cardFixedPropsMethods,
-    cardFooterComputed,
-    CardImgComputed,
-    CardTextComputed
-  ],
+  mixins: [cardCommon, cardFooterComputed, CardImgComputed, CardTextComputed],
   components: {
     CardFooter,
     CardImg,

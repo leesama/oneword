@@ -15,8 +15,8 @@ workbox.clientsClaim()
  */
 workbox.precaching.precacheAndRoute(self.__precacheManifest || [])
 
-// precacheAndRoute将采用缓存优先策略，这里我们请求的字体将使用缓存策略
-workbox.precaching.precacheAndRoute(['font.css'])
+// precacheAndRoute将采用缓存优先策略，这里我们请求的字体将使用缓存优先策略
+workbox.precaching.precacheAndRoute(['/yiyan/font.css'])
 
 // workbox.routing.registerRoute(
 //   new RegExp('.*experiments?.*'),

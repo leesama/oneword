@@ -23,7 +23,6 @@
 import Scroll from '@components/scroll/scroll-base/scroll-base'
 
 const date = new Date()
-// 今天的月份年份对象
 const thisMonth = { year: date.getFullYear(), month: date.getMonth() + 1 }
 export default {
   name: 'crosstime-date',

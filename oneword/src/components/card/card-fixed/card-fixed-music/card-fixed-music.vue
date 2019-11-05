@@ -14,25 +14,23 @@
           :replycnt="replycnt"
           :collectcnt="collectcnt"
           :likecnt="likecnt"
+          :liked="liked"
           @replyClick="handleReplyClick"
+          @likeClick="handleLikeClick"
         />
       </footer>
     </div>
   </div>
 </template>
 <script>
-import {
-  cardFixedPropsMethods,
-  cardFooterComputed,
-  CardImgComputed
-} from '@mixins'
-
+import { cardFooterComputed, CardImgComputed } from '@mixins'
+import { cardCommon } from '@mixins/cardCommon.js'
 import MusicControl from '@components/music/music-player-control/music-player-control'
 import CardImg from '@components/card/card-base/card-base-img/card-base-img'
 import CardFooter from '@components/card/card-base/card-base-footer/card-base-footer'
 export default {
   name: 'card-fixed',
-  mixins: [cardFixedPropsMethods, cardFooterComputed, CardImgComputed],
+  mixins: [cardCommon, cardFooterComputed, CardImgComputed],
   components: {
     CardFooter,
     CardImg,

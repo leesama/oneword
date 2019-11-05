@@ -57,14 +57,6 @@ export default {
       default() {
         return []
       }
-    },
-    cardClassName: {
-      type: String,
-      default: '.card-container'
-    },
-    scrollContentClassName: {
-      type: String,
-      default: '.scroll-content'
     }
   },
   mounted() {
@@ -80,8 +72,8 @@ export default {
         document.querySelector('.detail-footer').style.visibility = 'hidden'
       }
       // 处理betterscroll样式, 必须删除scroll Content中的transition样式，否则z-index会无效，删除之后需要通过position来定位
-      this.scrollContentDom = document.querySelector(
-        this.scrollContentClassName
+      this.scrollContentDom = this.$el.parentNode.querySelector(
+        '.scroll-content'
       )
       this.transformStyle = this.scrollContentDom.getAttribute('style')
 
@@ -100,12 +92,17 @@ export default {
       const index = this.cardContainerData.findIndex(
         i => i.textcardid === this.cardTapCardData.textcardid
       )
-      let cardDom = document.querySelectorAll(this.cardClassName)[index]
-
-      // 给cardwrapper设置高度，card fixed布局居中会丢失高度，这里获取高度并将其赋值给cardwrapper
-      if (this.cardClassName.includes('.flex-text')) {
+      let cardDom
+      if (this.$el.parentNode.querySelector('.scroll-content .flex-text')) {
+        cardDom = this.$el.parentNode.querySelectorAll(
+          '.scroll-content .flex-text'
+        )[index]
         cardDom.style.height = `${cardDom.scrollHeight}px`
         cardDom = cardDom.querySelectorAll('main')[0]
+      } else {
+        cardDom = this.$el.parentNode.querySelectorAll(
+          '.scroll-content .card-container'
+        )[index]
       }
       cardDom.setAttribute('style', 'position:fixed;z-index:9999')
       // 显示遮罩

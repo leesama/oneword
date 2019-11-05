@@ -12,102 +12,292 @@
     </div>
 
     <div class="comment-scroll">
-      <!-- 传入commentData,scroll-y会在恰当的时机刷新页面-->
-      <scroll-y ref="scroll" :pullUpLoad="true" @pullingUp="handlePullingUp">
+      <scroll-y
+        ref="scroll"
+        :pullUp="true"
+        @pullUp="handlePullUp"
+        :pullDown="true"
+        @pullDown="handlePullDown"
+      >
         <div class="totalinfo">
           <div class="left">
-            <span>11</span>
+            <span>{{cardInfo.replycnt}}</span>
             <span>感悟：</span>
           </div>
           <div class="right">
             <span>同感</span>
-            <span>{{sameFeel}}</span>
+            <span>{{cardInfo.commentcnt}}</span>
             <to-button class="to-button" />
           </div>
         </div>
         <div class="content">
           <comment-detail
-            @contentClick="handleContentClick"
+            ref="item"
+            @thumbs="handleThumbsClick"
+            @contentClick="handleContentClick(key)"
             @moreClick="handleMoreClick"
-            v-for="item in hotList"
-            :commentInfo="item"
-            :key="`${item.commentid}1`"
-          />
-          <div class="check-more-hot" @tap="handleMoreHotClick">查看更多热门评论</div>
-          <comment-detail
-            @contentClick="handleContentClick"
-            @moreClick="handleMoreClick"
-            v-for="item in commentList"
+            v-for="(item,key) in commentData"
             :commentInfo="item"
             :key="item.commentid"
           />
         </div>
       </scroll-y>
     </div>
-    <bottom-input @click="handleSubmitFeeling" />
-    <toast :toastVisible="toastVisible" @cancel="handleCancelToast" />
+    <bottom-input @send="handleSubmitFeeling" ref="bottomInput" />
+    <drawer
+      @click="handleDrawerClick"
+      :visible="commentDrawerVisible"
+      @cancel="handleCancelCommentDrawer"
+      :drawerInfo="commentDrawerInfo"
+    />
+    <drawer
+      @click="handleSelfDrawerClick"
+      :visible="commentSelfDrawerVisible"
+      @cancel="handleCancelCommentSelfDrawer"
+      :drawerInfo="commentSelfDrawerInfo"
+    />
   </div>
 </template>
 
 <script>
-import Toast from '@components/toast/toast.vue'
-
+import { mapGetters, mapActions } from 'vuex'
+import Clipboard from 'clipboard'
+import Drawer from '@components/drawer/drawer'
 import BottomInput from '@components/input/bottom-input/bottom-input.vue'
 import ToButton from '@components/button/button-back/button-back.vue'
 import ScrollY from '@components/scroll/scroll-y/scroll-y.vue'
 import TheHeader from '@components/detail/the-header/the-header.vue'
 import CommentDetail from '@components/comment/comment-detail.vue'
-import { getComments } from '@models'
-// 这里直接保存上一个页面携带过来的评论数，原app 经测试刷新不会更改....
+import {
+  getComments,
+  newComment,
+  deleteComment,
+  likeComment,
+  cancelLikeComment
+} from '@models'
 export default {
   name: 'comment',
   data() {
     return {
-      commentData: {},
-      sameFeel: '666',
-      toastVisible: false
+      sameFeel: 0,
+      feeling: 0,
+      commentData: [],
+      commentDrawerInfo: ['回复', '复制', { color: true, word: '举报' }],
+      commentSelfDrawerInfo: ['复制', { color: true, word: '删除' }],
+      commentDrawerVisible: false,
+      commentSelfDrawerVisible: false,
+      commentSelectIndex: 0,
+      cardInfo: {}
     }
   },
-  async created() {
-    this.commentData = await getComments()
-    // this.sameFeel = this.$route.params.cardInfo.commentcnt
-  },
-  updated() {
-    this.$refs.scroll.refreshAfterAnimation()
-  },
+  // updated() {
+  //   this.$refs.scroll.refreshAfterAnimation()
+  // },
+
   computed: {
-    hotList() {
-      return this.commentData.hotlist ? this.commentData.hotlist : []
-    },
-    commentList() {
-      return this.commentData.commentlist ? this.commentData.commentlist : []
-    }
+    ...mapGetters(['userInfoAndBookList', 'getCardInfo'])
   },
   methods: {
+    ...mapActions(['addCardReplyAndCommentCnt']),
     handleClickBack() {
       this.$router.back(-1)
     },
     // 监听到加载更多后，会展示更多页面，此时需要刷新scroll
     handleMoreClick() {
       this.$refs.scroll.refresh()
-      this.day = 3
     },
-    handlePullingUp() {},
-    handleMoreHotClick() {
-      this.$router.replace({
-        name: 'hot-comment',
-        params: { cardInfo: this.cardInfo }
+    async handlePullDown() {
+      this.cardId = this.$route.params.cardid
+      const from = this.$route.params.from
+      // 根据路由参数获得数据
+      this.cardInfo = this.getCardInfo(from, this.cardId)
+      // 根据上一个路由的参数组合出操作数据的函数
+      this.addReplyCnt = num => {
+        return this.addCardReplyAndCommentCnt({
+          type: from,
+          cardId: this.cardId,
+          num
+        })
+      }
+      this.commentData = (await getComments({
+        cardid: this.cardId
+      })).data
+
+      this.$refs.scroll.finishPullDown()
+
+      if (this.commentData.length < 10) {
+        this.$refs.scroll.loadingBallVisible = true
+        this.$refs.scroll.changeEnd = true
+      }
+    },
+    // 上拉事件
+    async handlePullUp() {
+      const { data } = await getComments({
+        cardid: this.cardId,
+        datetime: this.commentData[this.commentData.length - 1].datetime
+      })
+      if (data.length < 10) {
+        this.$refs.scroll.closePullUp()
+      } else {
+        this.$refs.scroll.finishPullUp()
+      }
+      this.commentData = this.commentData.concat(data)
+      this.$nextTick(() => {
+        this.$refs.scroll.refresh()
       })
     },
     // 处理点击内容事件
-    handleContentClick() {
-      this.toastVisible = true
+    handleContentClick(i) {
+      this.commentSelectIndex = i
+      if (
+        this.commentData[this.commentSelectIndex].creator.uid ===
+        this.userInfoAndBookList.user.uid
+      ) {
+        this.commentSelfDrawerVisible = true
+      } else {
+        this.commentDrawerVisible = true
+      }
     },
-    handleCancelToast() {
-      this.toastVisible = false
+    // 处理点击不同的项
+    handleDrawerClick(i) {
+      switch (i) {
+        case 0:
+          // eslint-disable-next-line standard/computed-property-even-spacing
+          const username = this.commentData[this.commentSelectIndex].creator
+            .username
+          this.reciverPrefix = ` 回复 ${username} : `
+          this.$refs.bottomInput.setContent(this.reciverPrefix)
+          // 保存回复用户到的前缀和reciverid用于后面回复功能
+          // eslint-disable-next-line standard/computed-property-even-spacing
+          this.receiver = this.commentData[this.commentSelectIndex].creator
+          break
+        case 1:
+          let clipboard = new Clipboard('.drawer', {
+            text: () => {
+              return this.commentData[this.commentSelectIndex].content
+            }
+          })
+          clipboard.on('success', e => {
+            this.$toastMessage('复制成功')
+            clipboard.destroy()
+          })
+          clipboard.on('error', e => {
+            this.$toastMessage('该浏览器不支持自动复制')
+            clipboard.destroy()
+          })
+          break
+
+        default:
+          break
+      }
+      this.commentDrawerVisible = false
     },
-    handleSubmitFeeling(content) {
-      // this.$toastMessage({ message: '33333', time: 1000 })
+
+    async handleThumbsClick(commentId, liked) {
+      const thumbIndex = this.commentData.findIndex(i => {
+        return i.commentid === commentId
+      })
+      if (
+        this.commentData[thumbIndex].creator.uid ===
+        this.userInfoAndBookList.user.uid
+      ) {
+        return this.$toastMessage('不可点赞本人评论')
+      }
+      // 如果是不喜欢，发送喜欢请求,如果是喜欢状态,发送取消喜欢请求，
+      if (!liked) {
+        await likeComment({ commentid: commentId })
+      } else {
+        await cancelLikeComment({ commentid: commentId })
+      }
+      this.$refs.item[thumbIndex].changeThumb()
+    },
+    async handleSelfDrawerClick(i) {
+      switch (i) {
+        case 0:
+          let clipboard = new Clipboard('.drawer', {
+            text: () => {
+              return this.commentData[this.commentSelectIndex].content
+            }
+          })
+          clipboard.on('success', e => {
+            this.$toastMessage('复制成功')
+            clipboard.destroy()
+          })
+          clipboard.on('error', e => {
+            this.$toastMessage('该浏览器不支持自动复制')
+            clipboard.destroy()
+          })
+          break
+        case 1:
+          const { code } = await deleteComment({
+            commentid: this.commentData[this.commentSelectIndex].commentid
+          })
+          if (code === 0) {
+            this.addReplyCnt(-1)
+            this.commentData.splice(this.commentSelectIndex, 1)
+          }
+          break
+        default:
+          break
+      }
+      this.commentSelfDrawerVisible = false
+    },
+    handleCancelCommentDrawer() {
+      this.commentDrawerVisible = false
+    },
+    handleCancelCommentSelfDrawer() {
+      this.commentSelfDrawerVisible = false
+    },
+    async handleSubmitFeeling(content) {
+      // 只有内容和前缀一致，才会在参数中添加reciverid
+      if (content.startsWith(this.reciverPrefix)) {
+        const replyContent = content.substr(this.reciverPrefix.length)
+        const {
+          code,
+          data: { commentid, datetime }
+        } = await newComment({
+          content: replyContent,
+          cardid: this.cardId,
+          receiverid: this.receiver.uid
+        })
+        if (code === 0) {
+          this.commentData.unshift({
+            commentid,
+            content: replyContent,
+            creator: this.userInfoAndBookList.user,
+            datetime,
+            receiver: this.receiver,
+            likecnt: 0,
+            textcard: this.cardInfo
+          })
+          this.addReplyCnt(1)
+          this.$nextTick(() => {
+            this.$refs.scroll.refresh()
+          })
+        }
+      } else {
+        const {
+          code,
+          data: { commentid, datetime }
+        } = await newComment({
+          content,
+          cardid: this.cardId
+        })
+        if (code === 0) {
+          this.commentData.unshift({
+            commentid,
+            content: content,
+            creator: this.userInfoAndBookList.user,
+            datetime,
+            likecnt: 0,
+            textcard: this.cardInfo
+          })
+          this.addReplyCnt(1)
+          this.$nextTick(() => {
+            this.$refs.scroll.refresh()
+          })
+        }
+      }
     }
   },
   components: {
@@ -116,7 +306,7 @@ export default {
     ToButton,
     CommentDetail,
     BottomInput,
-    Toast
+    Drawer
   }
 }
 </script>
@@ -133,6 +323,7 @@ export default {
   font-size 40px
   .comment-scroll
     flex 1
+    margin-bottom 130px
     overflow hidden
     .totalinfo
       display flex

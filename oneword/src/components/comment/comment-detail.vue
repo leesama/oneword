@@ -13,14 +13,14 @@
               {{receiverName.username}}
             </span>
           </p>
-          <p class="time">{{commentInfo.datetime.substr(10,6)}}</p>
+          <p class="time">{{time}}</p>
         </div>
         <div class="info-right">
-          <thumbs-button :number="commentInfo.likecnt" @click="handleClick" :like="like" />
+          <thumbs-button :number="likecnt" @click="handleThumbsClick" :like="liked" />
         </div>
       </div>
       <div class="content" ref="content">
-        <p ref="innerContent">{{commentInfo.content}}</p>
+        <p ref="innerContent" v-html="commentInfo.content" />
       </div>
       <p class="more" v-if="moreVisible" @click.stop="handleMoreClick">...更多</p>
     </div>
@@ -29,12 +29,13 @@
 
 <script>
 import ThumbsButton from '@components/button/button-thumbs-up/button-thumbs-up.vue'
-const REQUESTURL = '/likecomment'
 export default {
   name: 'comment-detail',
   data() {
     return {
-      moreVisible: false
+      moreVisible: false,
+      liked: false,
+      likecnt: this.commentInfo.likecnt
     }
   },
   props: {
@@ -43,21 +44,20 @@ export default {
       default() {
         return {}
       }
-    },
-    like: {
-      type: Boolean,
-      default: false
     }
   },
   mounted() {
     this.initMoreVisible()
   },
+
   methods: {
     initMoreVisible() {
       const el = this.$refs.content
       this.moreVisible = el.clientHeight < el.scrollHeight
     },
-    handleClick() {},
+    handleThumbsClick() {
+      this.$emit('thumbs', this.commentInfo.commentid, this.liked)
+    },
     handleContentClick() {
       this.$emit('contentClick', this.commentInfo.commentid)
     },
@@ -73,19 +73,26 @@ export default {
           this.$emit('moreClick')
         }
       })
+    },
+    changeThumb() {
+      if (this.liked) {
+        this.likecnt -= 1
+      } else {
+        this.likecnt += 1
+      }
+      this.liked = !this.liked
     }
   },
   computed: {
+    time() {
+      return this.commentInfo.datetime.substr(0, 10) ===
+        new Date().toLocaleDateString().replace(/\//g, '-')
+        ? this.commentInfo.datetime.substr(10, 6)
+        : this.commentInfo.datetime.substr(5, 5)
+    },
     receiverName() {
       return this.commentInfo.receiver ? this.commentInfo.receiver : false
     }
-    // isOverflowing() {
-    //   var element = this.$refs.content
-    //   return (
-    //     element.offsetHeight < element.scrollHeight ||
-    //     element.offsetWidth < element.scrollWidth
-    //   )
-    // }
   },
   components: { ThumbsButton }
 }
@@ -102,11 +109,11 @@ export default {
     height 96px
     width 96px
     margin-right 26px
+    border-radius 50%
+    background-color #f2f2f2
+    overflow hidden
     img
-      border-radius 50%
-      height 100%
       width 100%
-      center()
   .comment-content
     margin-top 5px
     flex 1
@@ -120,8 +127,6 @@ export default {
         .time
           font-size 30px
           margin-bottom 24px
-      .info-right
-        padding-right 40px
     .content
       max-height 1000px
       overflow hidden

@@ -23,15 +23,20 @@ export default {
   data() {
     return {
       tab: [
-        { tabTo: '/', tabIcon: 'icon-home' },
-        { tabTo: '/explore', tabIcon: 'icon-sousuo' },
+        { tabTo: '/home', tabIcon: 'icon-home' },
+        { tabTo: '/explore/all', tabIcon: 'icon-sousuo' },
         { tabTo: '/message', tabIcon: 'icon-message' },
         { tabTo: '/mine', tabIcon: 'icon-wode' }
       ],
       selectTab: 0
     }
   },
-  mounted() {},
+  // 组件创建的时候根据路由设置选中的tab
+  created() {
+    this.selectTab = this.tab.findIndex(i => {
+      return i.tabTo === this.$route.path
+    })
+  },
   methods: {
     // 计算图标classname，点击后的图标名称为原图标+click
     calIconClass(i) {

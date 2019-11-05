@@ -1,6 +1,6 @@
 <template>
   <div class="music-container">
-    <scroll-y :showLoading="false" :scrollBar="false" :showLodingBall="false">
+    <scroll-y :firstLoadPullDown="false" :scrollBar="false">
       <card-header
         :smallavatar="smallavatar"
         :dateTime="dateTime"

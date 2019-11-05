@@ -11,13 +11,13 @@
     @scroll="scroll"
     :beforeScroll="true"
     @beforeScroll="beforeScroll"
-    :touchEnd="true"
-    @touchEnd="touchEnd"
     :scrollEnd="true"
     @scrollEnd="scrollEnd"
     ref="baseScroll"
-    :pullUpLoad="pullUpLoad"
-    @pullingUp="pullingUp"
+    :pullUp="pullUp"
+    @pullUp="handlePullUp"
+    :pullDown="pullDown"
+    @pullDown="handlePullDown"
     :directionLockThreshold="0"
     :click="false"
   >
@@ -26,7 +26,7 @@
         <li v-for="(item, index) of list" class="animation-li" ref="li" :key="index"></li>
       </ul>
       <slot />
-      <LoadingBall :direction="2" v-if="showLodingBall" />
+      <LoadingBall :direction="2" v-if="loadingBallVisible" :changeEnd="changeEnd" />
     </div>
   </scroll-base>
 </template>
@@ -34,6 +34,7 @@
 <script>
 import LoadingBall from '@components/loading/loading-ball/loading-ball.vue'
 import ScrollBase from '@components/scroll/scroll-base/scroll-base.vue'
+const PULLDOWN_SPACING_TIME = 700
 export default {
   name: 'scroll-y',
   data() {
@@ -45,15 +46,16 @@ export default {
         [90, 2, -30, 5],
         [0, 3, -120, -5]
       ],
-      loadingBallVisible: true,
-      animationRuning: true
+      loadingBallVisible: false,
+      changeEnd: false
     }
   },
   props: {
-    showLoading: { type: Boolean, default: true },
-    pullUpLoad: { type: Boolean, default: false },
-    scrollBar: { type: Boolean, default: true },
-    showLodingBall: { type: Boolean, default: true }
+    pullDown: { type: Boolean, default: false },
+    // 第一次加载展示pulldown动画
+    firstLoadPullDown: { type: Boolean, default: true },
+    pullUp: { type: Boolean, default: false },
+    scrollBar: { type: Boolean, default: true }
   },
   mounted() {
     this.initScroll()
@@ -61,48 +63,35 @@ export default {
   methods: {
     initScroll() {
       this.baseScroll = this.$refs.baseScroll
-      if (this.showLoading) {
-        this.items = this.$refs.li
+      if (this.firstLoadPullDown) {
         this.baseScroll.disable()
         this.animateByScroll(60)
         this.baseScroll.scrollTo(0, 100, 600)
+        setTimeout(() => {
+          this.baseScroll.stop()
+        }, 600)
+        this.baseScroll.scroll.trigger('pullingDown')
       }
     },
     scroll(e) {
       let y = e.y
       if (y > 0) {
-        // scroll左侧动画
         // 打乱li动画项对应的移动信息的数组，这里是为了实现每次scroll时，顶部的动画都能随机变化移动
+        // 滚动之前将滚动项顺序打乱
         if (!this.items) {
-          // 滚动之前将滚动项顺序打乱
           this.list.sort(() => 0.5 - Math.random())
           // dom更新后将其缓存起来
           this.$nextTick(function() {
             this.items = this.$refs.li
           })
         }
-        if (this.locked) {
-          // 如果加锁了，直接返回    如果 x大于60.将锁取消，之后就会走执行动画的逻辑
-          if (y > 60) {
-            this.locked = false
-          }
-          return
-        }
         if (
           this.scrollBeginTime &&
           new Date().getTime() - this.scrollBeginTime < 300 &&
           y >= 60
         ) {
-          // 如果滚动的距离大于scrollX，加锁
-          this.locked = true
-          // 把this.scrollBeginTime null作为标记,防止多次触发
           this.scrollBeginTime = null
-          this.baseScroll.disable()
-          this.animateByScroll(60)
-          this.baseScroll.scrollTo(0, 100, 600)
-          // 刷新事件触发后,标记为动画运行中
-          this.animationRuning = true
-          return
+          this._triggerPullingDown()
         }
         this.animateByScroll(y)
       }
@@ -111,31 +100,19 @@ export default {
     beforeScroll() {
       this.scrollBeginTime = new Date().getTime()
     },
-    scrollEnd() {
-      // 持续的动画执行时，会disable scroll,当scroll结束时，让其启用
-      if (!this.baseScroll.isEnabled()) {
+    scrollEnd(e) {
+      const y = e.y
+      // 滚动结束，标记动画结束
+      // 持续的动画执行时，会disable scroll,当scroll结束时，让其启用,刷新scroll
+      if (y === 0 && !this.baseScroll.scroll.enabled) {
         this.baseScroll.enable()
+        this.baseScroll.refresh()
       }
       this.items = null
-      // 滚动结束，标记动画结束
-      if (this.animationRuning) {
-        this.animationRuning = false
-      }
-    },
-    touchEnd(e) {
-      const y = e.y
-      // 触发刷新事件
-      if (y >= 60) {
-        this.$emit('refresh')
-        this.baseScroll.disable()
-        this.baseScroll.scrollBy(0, 0, 0)
-        // 刷新事件触发后,标记为动画运行中
-        this.animationRuning = true
-      }
     },
     // 根据scroll值进行动画
     animateByScroll(val) {
-      this.$nextTick(() => {
+      this.items &&
         this.items.forEach((item, index) => {
           const rate = val / (80 + (this.list[index][1] / 4) * 20)
           // 动画的项需要移动的x轴距离,需要移动到的位置减去当前位置加上偏移位置
@@ -176,37 +153,63 @@ export default {
             })
           }
         })
-      })
-    },
-    // 动画执行完毕刷新scroll
-    refreshAfterAnimation() {
-      if (!this.animationRuning) {
-        this.baseScroll.refresh()
-      } else {
-        // 如果滚动动画在执行中不能直接刷新scroll，会卡死，需要监听动画执行完毕再刷新
-        // 监听动画执行完毕状态，动画完毕状态后刷新scroll,取消监听器
-        this.cancelWatchAnimation = this.$watch('animationRuning', newV => {
-          if (!newV) {
-            this.baseScroll.refresh()
-            this.cancelWatchAnimation()
-          }
-        })
-      }
     },
     refresh() {
-      this.$refs.baseScroll.refresh()
+      this.baseScroll.refresh()
     },
     disable() {
-      this.$refs.baseScroll.disable()
+      this.baseScroll.disable()
     },
     enable() {
-      this.$refs.baseScroll.enable()
+      this.baseScroll.enable()
     },
-    pullingUp() {
-      this.$emit('pullingUp')
+    handlePullUp() {
+      this.loadingBallVisible = true
+      this.$emit('pullUp')
+    },
+    openPullUp() {
+      this.baseScroll.openPullUp()
+      this.changeEnd = false
+    },
+    finishPullUp() {
+      this.baseScroll.finishPullUp()
+      this.loadingBallVisible = false
+    },
+    closePullUp() {
+      this.baseScroll.closePullUp()
+      this.loadingBallVisible = true
+      this.changeEnd = true
     },
     scrollToElement(el) {
-      this.$refs.baseScroll.scrollToElement(el, 0, true, true)
+      this.baseScroll.scrollToElement(el, 0, true, true)
+    },
+    handlePullDown() {
+      this.pullDownBeginTime = new Date().getTime()
+      this.loadingBallVisible = false
+      this.changeEnd = false
+      this.$emit('pullDown')
+    },
+    // 如果请求没有一秒，延迟到1秒后再执行完成下拉
+    finishPullDown() {
+      const spacingTime = new Date().getTime() - this.pullDownBeginTime
+      if (spacingTime < PULLDOWN_SPACING_TIME) {
+        setTimeout(() => {
+          this.baseScroll.scrollTo(0, 0, 600)
+          this.baseScroll.finishPullDown()
+        }, PULLDOWN_SPACING_TIME - spacingTime)
+      } else {
+        this.baseScroll.scrollTo(0, 0, 600)
+        this.baseScroll.finishPullDown()
+      }
+    },
+    // 手动触发pullingDown
+    _triggerPullingDown() {
+      this.baseScroll.disable()
+      this.animateByScroll(60)
+      this.baseScroll.scrollTo(0, 100, 600)
+      // 这里指定minScroll是因为我们手动触发pullingDown，不会触发达到默认的阈值，这时候指定到默认值
+      this.baseScroll.scroll.minScrollY = 100
+      this.baseScroll.scroll.trigger('pullingDown')
     }
   },
   components: { ScrollBase, LoadingBall }
@@ -216,10 +219,10 @@ export default {
 @import '~@common/stylus/mixins.styl'
 // bs内容区域必须高于wrpper才能滚动,写死内容区域最小高度大于wrapper高度，避免内容小于wrapper高度
 .scroll-content
-  min-height 100.001%
+  min-height 100.5%
   position relative
   .animation-ul
-    top '-100px'
+    top '-90px'
     left 50%
     transform translateX(-50%)
     position absolute

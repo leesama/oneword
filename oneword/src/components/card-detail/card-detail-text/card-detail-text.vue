@@ -1,6 +1,12 @@
 <template>
   <div class="text-container">
-    <scroll-y ref="scrollY" :showLoading="false" :scrollBar="false" :showLodingBall="false">
+    <scroll-y
+      ref="scrollY"
+      :pullDown="true"
+      @pullDown="handlePullDown"
+      :firstLoadPullDown="false"
+      :scrollBar="false"
+    >
       <card-header
         :smallavatar="smallavatar"
         :dateTime="dateTime"
@@ -58,16 +64,10 @@ export default {
     // 数据更新后刷新scroll
     this.$refs.scrollY.refresh()
   },
-  mounted() {
-    setTimeout(() => {
-      if (
-        !this.imgSrc &&
-        this.$refs.content.clientHeight > (window.innerHeight * 2) / 5
-      ) {
-        this.$refs.main.style.marginTop = '-40.257vw'
-        this.$refs.scrollY.refresh()
-      }
-    }, 10)
+  methods: {
+    handlePullDown() {
+      this.$refs.scrollY.finishPullDown()
+    }
   },
   components: {
     CardHeader,

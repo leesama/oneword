@@ -1,60 +1,38 @@
-// 格式化Feed数据
-export function formatFeedData(data) {
-  const newData = []
-  const map = {}
-  for (const i of data) {
-    const time = i.datetime.substring(0, 10)
-    if (!map[time]) {
-      newData.push({
-        time,
-        card: [i]
-      })
-      map[time] = true
-    } else {
-      for (const j of newData) {
-        if (j.time === time) {
-          j.card.push(i)
-          break
-        }
-      }
-    }
-  }
-  for (const i of newData) {
-    const itime = i.time
-    i.time = {
-      year: itime.substr(0, 4),
-      month: itime.substr(5, 2),
-      day: itime.substr(8, 2)
-    }
-  }
-  return newData
-}
+// 格式化Card数据
+// 根据时间进行分组
+export function formatCardData(data) {}
 // 将数据变为一维对象
 export function formatTo1Level(data) {
   const newArray = []
-  data.forEach(i => { i.card.forEach(j => { newArray.push(j) }) })
+  data.forEach(i => {
+    i.card.forEach(j => {
+      newArray.push(j)
+    })
+  })
   return newArray
 }
 
 /**
- * @description: // 移除transfrom属性，用relative定位替换
- * @param {type} dom
- *
- */
-export function removeTransfrom(dom) {
-  if (dom.style && dom.style.transform) {
-    const tranformLeft = dom.style.transform.split('(')[1].split(')')[0]
-    const tranformTop = dom.style.transform.split('(')[2].split(')')[0]
-    dom.setAttribute(
-      'style',
-      `position:relative;left:${tranformLeft};top:${tranformTop};`
-    )
-  }
-}
-/**
- * @description:  封装成Promise的FileReader 函数
+ * @description:base46图片转换为file
  * @param {type}
  * @return:
+ */
+export function base64ToFile(dataurl, filename) {
+  const arr = dataurl.split(',')
+  const mime = arr[0].match(/:(.*?);/)[1]
+  const bstr = atob(arr[1])
+  let n = bstr.length
+  let u8arr = new Uint8Array(n)
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n)
+  }
+  return new File([u8arr], filename, { type: mime })
+}
+
+/**
+ * @description:  FileReader 函数
+ * @param {type}
+ * @return: promise
  */
 export function reader(file, options) {
   options = options || {}
@@ -65,11 +43,8 @@ export function reader(file, options) {
       resolve(reader)
     }
     reader.onerror = reject
-
     if (options.accept && !new RegExp(options.accept).test(file.type)) {
-      reject(new Error(
-        'wrong file type'
-      ))
+      reject(new Error('wrong file type'))
     }
 
     if (!file.type || /^text\//i.test(file.type)) {
@@ -78,4 +53,16 @@ export function reader(file, options) {
       reader.readAsDataURL(file)
     }
   })
+}
+const toString = Object.prototype.toString
+
+export function isDate(val) {
+  return toString.call(val) === '[object Date]'
+}
+
+export function isPlainObject(val) {
+  return toString.call(val) === '[object Object]'
+}
+export function isBoolean(val) {
+  return toString.call(val) === '[object Boolean]'
 }

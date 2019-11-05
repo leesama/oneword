@@ -1,6 +1,7 @@
 <template>
-  <div :class="loadingClass">
-    <div class="ball" ref="ball"></div>
+  <div class="endball" :class="loadingClass">
+    <div class="ball" ref="ball" v-if="!changeEnd"></div>
+    <div v-if="changeEnd">- End -</div>
   </div>
 </template>
 
@@ -8,7 +9,10 @@
 export default {
   name: 'loading-ball',
   // direction 为1小球竖向排列，2小球横向排列
-  props: { direction: { type: Number, default: 1 } },
+  props: {
+    direction: { type: Number, default: 1 },
+    changeEnd: { type: Boolean, default: true }
+  },
   computed: {
     loadingClass() {
       return this.direction === 1
@@ -45,4 +49,8 @@ export default {
   width 50px
   height 50px
   border-radius 50%
+  box-shadow 0 5px 10px #545353
+.endball
+  font-size 40px
+  font3()
 </style>

@@ -3,7 +3,7 @@
     <back-button @click="handleBackClick" />
     <collect-button :number="collectcnt" />
     <reply-button :number="replycnt" />
-    <like-button :number="likecnt" />
+    <like-button :number="likecnt" @click="handleLike" />
     <div class="share-wrapper">
       <share-button />
     </div>
@@ -38,7 +38,8 @@ export default {
   methods: {
     handleBackClick() {
       this.$emit('backClick')
-    }
+    },
+    handleLike() {}
   },
   components: {
     BackButton,

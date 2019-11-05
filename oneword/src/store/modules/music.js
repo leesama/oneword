@@ -30,6 +30,9 @@ const music = {
     },
     [types.SET_MUSIC_INFO](state, musicInfo) {
       state.musicInfo = musicInfo
+    },
+    [types.RESET_MUSIC_STATE](state) {
+      Object.assign(state, JSON.parse(localStorage.getItem('initState')).music)
     }
   }
 }

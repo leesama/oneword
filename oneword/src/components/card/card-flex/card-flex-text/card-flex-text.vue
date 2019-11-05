@@ -1,7 +1,14 @@
 <template>
   <div class="flex-text" ref="card">
     <header>
-      <img v-lazy="cardInfo.creator.smallavatar" :key="cardInfo.creator.smallavatar" alt />
+      <img
+        v-lazy="cardInfo.creator.smallavatar"
+        class="user-img"
+        :key="cardInfo.creator.smallavatar"
+        alt
+        v-if="cardInfo.creator.smallavatar"
+      />
+      <div class="user-img" v-else></div>
       <div class="title">
         <p>
           <span>{{cardInfo.creator.username}}</span>
@@ -18,7 +25,7 @@
       <card-content
         :class="{hidemoremask:moreMaskHidden}"
         ref="content"
-        :isCenter="isCenter"
+        :isCenter="true"
         :content="content"
         :style="fontStyle"
         :from="from"
@@ -29,6 +36,7 @@
         :collectcnt="collectcnt"
         :likecnt="likecnt"
         @replyClick="handleReplyClick"
+        @likeClick="handleLikeClick"
       />
     </main>
   </div>
@@ -36,13 +44,14 @@
 
 <script>
 import { CardTextComputed, CardImgComputed, cardFooterComputed } from '@mixins'
+import { cardCommon } from '@mixins/cardCommon.js'
 import CardFooter from '../../card-base/card-base-footer/card-base-footer.vue'
 import CardInfo from '../../card-base/card-base-info/card-base-info.vue'
 import CardContent from '../../card-base/card-base-content-horizontal/card-base-content-horizontal'
 import CardImg from '../../card-base/card-base-img/card-base-img.vue'
 export default {
   name: 'card-flex-text',
-  mixins: [CardTextComputed, CardImgComputed, cardFooterComputed],
+  mixins: [CardTextComputed, CardImgComputed, cardFooterComputed, cardCommon],
   data() {
     return {
       moreMaskHidden: true
@@ -66,23 +75,6 @@ export default {
       this.moreMaskHidden = false
     }
   },
-  methods: {
-    handleTap() {
-      this.$emit('cardTap', {
-        textcardid: this.cardInfo.textcardid,
-        width: this.$refs.card.clientWidth,
-        height: this.$refs.card.clientHeight,
-        left: this.$refs.card.getBoundingClientRect().left,
-        top: this.$refs.card.getBoundingClientRect().top
-      })
-    },
-    handleReplyClick() {
-      this.$router.push({
-        name: 'comment',
-        params: { cardInfo: this.cardInfo }
-      })
-    }
-  },
   components: { CardImg, CardContent, CardFooter, CardInfo }
 }
 </script>
@@ -94,7 +86,7 @@ export default {
   header
     display flex
     margin-bottom 15px
-    img
+    .user-img
       width 96px
       height 96px
       border-radius 50%
