@@ -1,0 +1,16 @@
+{
+  "name": "oneforgithub",
+  "version": "1.0.0",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leesama/oneword.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/leesama/oneword/issues"
+  },
+  "homepage": "https://github.com/leesama/oneword#readme"
+}
