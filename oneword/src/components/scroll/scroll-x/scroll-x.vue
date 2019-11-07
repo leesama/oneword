@@ -139,12 +139,13 @@ export default {
         if (i > 0) {
           i--
           const needChangeIndex = this.list.findIndex(item => item[2] === i)
-          this.items[needChangeIndex].style.background = 'rgb(74, 74, 74)'
+          this.items &&
+            (this.items[needChangeIndex].style.background = 'rgb(74, 74, 74)')
         } else {
           clearInterval(this.fixedInterval)
           this.fixedInterval = null
         }
-      }, 50)
+      }, 40)
     },
     // 清除li颜色
     clearLiBgcolor() {
@@ -185,8 +186,10 @@ export default {
           this.scrollBeginTime = null
           this.baseScroll.disable()
           this.animateByScroll(60)
-          this.baseScroll.scrollTo(90, 0, 500)
+          this.baseScroll.scroll.minScrollX = 90
+          this.baseScroll.scrollTo(90, 0, 520)
           this.liBgcolorAnimateChange()
+          this.refreshBeginTime = new Date().getTime()
           this.$emit('refresh')
           return
         }
@@ -269,6 +272,8 @@ export default {
       }
       // 触发刷新事件
       if (x >= 60) {
+        this.baseScroll.scroll.minScrollX = 90
+        this.refreshBeginTime = new Date().getTime()
         this.$emit('refresh')
         this.baseScroll.disable()
         this.liBgcolorAnimateChange()
@@ -463,8 +468,20 @@ export default {
           this.fixedBeginTime = null
         } else {
           // 右滑刷新
-          this.cardOriginList = newVal
-          this.cacheDom()
+          const dateRequestTime = new Date().getTime() - this.refreshBeginTime
+          if (dateRequestTime < 600) {
+            setTimeout(() => {
+              this.cardOriginList = newVal
+              this.cacheDom()
+              this.baseScroll.scroll.minScrollX = 0
+              this.baseScroll.scrollTo(0, 0, 2000)
+            }, 600 - dateRequestTime)
+          } else {
+            this.cardOriginList = newVal
+            this.cacheDom()
+            this.baseScroll.scroll.minScrollX = 0
+            this.baseScroll.scrollTo(0, 0, 2000)
+          }
         }
       }
     }
