@@ -285,7 +285,7 @@ normalBody.js 用于在ctx上添加相应方法
 
 nginx 转发80端口到443 
 /yiyan/ 路径的请求代理到pm2管理的本地3000端口服务上
-/js/png/mp3 缓存过期时间为7天
+/js/png/mp3 缓存过期时间为30天
 
 nginx 部分配置文件如下
 
@@ -298,7 +298,7 @@ nginx 部分配置文件如下
                   }
                  if ($request_filename ~* .*\.(?:js|css|png)$)
                  {
-                   expires      7d;
+                   expires      30d;
                  }
             root   /root/oneword/;
             index  index.html index.htm;
@@ -311,7 +311,7 @@ nginx 部分配置文件如下
             }
             if ($request_filename ~* .*\.(?:ttf)$)
             {
-                  expires      3000d;
+                  expires      365d;
             }
 
             proxy_pass http://localhost:3000;
