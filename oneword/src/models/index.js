@@ -3,7 +3,6 @@ import { formatCardData } from '@js/utils.js'
 // 该函数用于格式化Card数据
 const getformateCard = url => params =>
   post(url)(params).then(data => formatCardData(data.textcardlist))
-const getFont = get('yiyan/font.css')
 const getFeeds = post('yiyan/getfeeds')
 const getCards = getformateCard('yiyan/crosstime')
 const getComments = post('yiyan/getcommentbycard')
@@ -29,7 +28,6 @@ const cancelLike = post('yiyan/cancellike')
 const likeComment = post('yiyan/likecomment')
 const cancelLikeComment = post('yiyan/cancellikecomment')
 export {
-  getFont,
   getCards,
   getFeeds,
   getComments,

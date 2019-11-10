@@ -187,6 +187,9 @@ export default {
       }
     }
   },
+  activated() {
+    this.$refs.scroll.refresh()
+  },
   components: {
     BaseImg,
     ScrollY,

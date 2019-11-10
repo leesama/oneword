@@ -7,8 +7,6 @@ workbox.core.setCacheNameDetails({
 workbox.skipWaiting()
 workbox.clientsClaim()
 
-// 删除旧版数据 此API是workbox4.0的
-// workbox.precaching.cleanupOutdatedCaches()
 /*
  * vue-cli3.0通过workbox-webpack-plagin 来实现相关功能，我们需要加入
  * 以下语句来获取预缓存列表和预缓存他们，也就是打包项目后生产的html，js，css等* 静态文件
@@ -16,7 +14,13 @@ workbox.clientsClaim()
 workbox.precaching.precacheAndRoute(self.__precacheManifest || [])
 
 // precacheAndRoute将采用缓存优先策略，这里我们请求的字体将使用缓存优先策略
-workbox.precaching.precacheAndRoute(['/yiyan/font.css'])
+workbox.precaching.precacheAndRoute([
+  '/yiyan/fonts/FZQingKeBenYueSongS-R-GB.ttf',
+  '/yiyan/fonts/FZShuSong-Z01S.ttf',
+  '/yiyan/fonts/FZSongYi-Z13S.ttf',
+  '/yiyan/fonts/FZSuXinShiLiuKaiS-R-GB.ttf',
+  '/yiyan/fonts/FZZhengHeiS-EL-GB.ttf'
+])
 
 // workbox.routing.registerRoute(
 //   new RegExp('.*experiments?.*'),

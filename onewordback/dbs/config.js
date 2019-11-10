@@ -2,15 +2,15 @@ const env = require('../env')
 let host, dbs, redis
 if (env === 'dev') {
   host = 'http://192.168.1.2:3000/'
-  dbs = { port: '5432', password: '***' }
+  dbs = { port: '5432', password: '' }
   redis = { host: 'localhost', port: '6379' }
 } else if (env === 'prod') {
   host = 'https://www.sommerxt.com/'
-  dbs = { host: 'localhost', port: '9307', password: '********' }
+  dbs = { host: 'localhost', port: '9307', password: '' }
   redis = {
     host: 'localhost',
     port: '9308',
-    password: '*****'
+    password: ''
   }
 }
 

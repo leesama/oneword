@@ -10,7 +10,8 @@ module.exports = () => async (ctx, next) => {
     '/yiyan/signin',
     '/yiyan/signup',
     '/imgs/',
-    '/music/'
+    '/music/',
+    '/fonts/'
   ]
   let shouldCheckIsLogin = true
 

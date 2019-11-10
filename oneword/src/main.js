@@ -3,7 +3,6 @@ import App from './App.vue'
 import router from './routers'
 import store from './store'
 import anime from 'animejs'
-// 发布的时候记得打开registerServiceWorker
 import './registerServiceWorker'
 import './common/css/border.css'
 import './common/css/normalize.css'

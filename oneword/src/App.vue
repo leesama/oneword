@@ -15,7 +15,6 @@ import LoadingMask from '@components/loading/loading-mask/mask.vue'
 import MusicPlayer from '@components/music/music-player/music-player'
 import LoadingFont from '@components/loading/loading-font/loading-font'
 import { mapGetters, mapMutations } from 'vuex'
-import { getFont } from '@models'
 
 export default {
   data() {
@@ -29,13 +28,14 @@ export default {
   async created() {
     // 用户登录后请求并缓存数据到vuex
   },
-  // 如果缓存中有值，设置字体之后展示内容界面，如果没值，展示loading界面，设置字体，展示内容
+
   async mounted() {
     // 开发环境无法调试pwa,无法访问cached,不获取cached
     if (process.env.NODE_ENV === 'development') {
       await this.setFont()
       this.showContent()
     } else {
+      // 如果字体已经缓存了，设置字体之后展示内容界面，如果没缓存，展示loading界面，设置字体，展示内容
       const cacheStatus = await this.Cached()
       if (cacheStatus === true) {
         await this.setFont()
@@ -66,14 +66,21 @@ export default {
     },
     // 设置字体
     async setFont() {
-      const font = await getFont()
-      this._addFont(font)
-    },
-    _addFont(font) {
-      let style = document.createElement('style')
-      style.rel = 'stylesheet'
-      document.head.appendChild(style)
-      style.textContent = font
+      const FontArray = [
+        'FZQingKeBenYueSongS-R-GB',
+        'FZShuSong-Z01S',
+        'FZSongYi-Z13S',
+        'FZSuXinShiLiuKaiS-R-GB',
+        'FZZhengHeiS-EL-GB'
+      ]
+      for (const f of FontArray) {
+        const fontP = new FontFace(f, `url(/yiyan/fonts/${f}.ttf)`, {
+          style: 'normal',
+          weight: 'normal'
+        })
+        const font = await fontP.load()
+        document.fonts.add(font)
+      }
     }
   },
   watch: {

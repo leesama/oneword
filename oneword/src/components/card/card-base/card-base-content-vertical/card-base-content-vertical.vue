@@ -52,18 +52,16 @@ export default {
       max-width 610px
       min-height 30vw
       padding-right 10px
-      // &:before
-      // vertical-align middle
-      // margin-left -8px
-      // display inline-block
-      // content ''
-      // width 20px
-      // height 20px
-      // background-color #ffffff
-      // border-radius 50%
-      // border 3px solid red
-      // margin-bottom 17px
-      // color red
+      &:before
+        display inline-block
+        content ''
+        width 20px
+        height 20px
+        background-color #ffffff
+        border-radius 50%
+        border 3px solid red
+        margin-bottom 17px
+        color red
     &:after
       padding-bottom 100%
       content ''
