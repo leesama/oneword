@@ -30,12 +30,7 @@
       ></image-clipper>
       <div class="words">
         <input placeholder="标题 (可无)" v-model="title" />
-        <textarea-autosize
-          class="textarea-autosize"
-          placeholder="正文"
-          ref="myTextarea"
-          v-model="content"
-        />
+        <textarea class="textarea" placeholder="正文" ref="myTextarea" v-model="content" />
         <input placeholder="出处/作者 (可无)" v-model="user" />
       </div>
       <div class="tag-container">
@@ -180,12 +175,12 @@ export default {
       text-align center
       &::placeholder
         color #d5d5d9
-    .textarea-autosize:nth-child(2)
+    .textarea:nth-child(2)
       width 100%
       font-size 45px
       line-height 70px
       border-radius none
-      min-height 500px
+      height 500px
       border-top 1px solid #f2f2f2
       border-bottom 1px solid #f2f2f2
       &::placeholder

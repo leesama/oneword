@@ -90,17 +90,17 @@ Card.init(
       autoIncrement: true
     },
     picpath: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING(99999)
     },
     commentcnt: {
       type: Sequelize.INTEGER,
       defaultValue: 0
     },
     from: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING(99999)
     },
     type: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING(99999)
     },
     collectcnt: {
       type: Sequelize.INTEGER,
@@ -112,20 +112,20 @@ Card.init(
       defaultValue: 0
     },
     content: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING(99999)
     },
     musicurl: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING(99999)
     },
     category: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING(99999)
     },
     title: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING(99999)
     },
-    original: { type: Sequelize.STRING },
+    original: { type: Sequelize.STRING(99999) },
     musicurl: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING(99999)
     }
   },
   {
