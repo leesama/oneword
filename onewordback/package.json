@@ -15,7 +15,7 @@
     "koa-router": "^7.4.0",
     "koa-session": "^5.12.3",
     "koa-static": "^5.0.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "moment": "^2.24.0",
     "multer": "^1.4.2",
     "nodemailer": "^6.3.0",
