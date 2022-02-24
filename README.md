@@ -1,10 +1,4 @@
 <p align="center">
-  <a href="https://www.sommerxt.com">
-    <img width="200" src="https://sommerxt.com/img/icons/android-chrome-192x192.png">
-  </a>
-</p>
-
-<p align="center">
   <a href="#简介">简介</a>&nbsp;|&nbsp;<a href="#项目细节">项目细节</a>
 </p>
 
