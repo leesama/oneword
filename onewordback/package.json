@@ -22,7 +22,7 @@
     "passport-local": "^1.0.0",
     "pg": "^7.12.1",
     "pg-hstore": "^2.3.3",
-    "sequelize": "^5.19.4",
+    "sequelize": "^6.28.2",
     "validator": "^11.1.0"
   },
   "devDependencies": {},
