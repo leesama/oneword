@@ -1,38 +1,26 @@
-const env = require('../env')
-let host, dbs, redis
-if (env === 'dev') {
-  host = 'http://192.168.1.2:3000/'
-  dbs = { port: '5432', password: '' }
-  redis = { host: 'localhost', port: '6379' }
-} else if (env === 'prod') {
-  host = 'https://www.sommerxt.com/'
-  dbs = { host: 'localhost', port: '9307', password: '' }
-  redis = {
-    host: 'localhost',
-    port: '9308',
-    password: ''
-  }
-}
+let host = "http://192.168.31.25:3000/";
+dbs = { port: "5432", password: "12345678" };
+redis = { host: "localhost", port: "6379" };
 
 module.exports = {
   host: host,
   dbs: {
     get dbName() {
-      return 'oneword'
+      return "oneword";
     },
     get host() {
-      return 'localhost'
+      return "localhost";
     },
     get port() {
-      return dbs.port
+      return dbs.port;
     },
     get user() {
-      return 'postgres'
+      return "postgres";
     },
     get password() {
-      return dbs.password
-    }
+      return dbs.password;
+    },
   },
   redis,
-  uploadPath: 'uploads/imgs/'
-}
+  uploadPath: "uploads/imgs/",
+};

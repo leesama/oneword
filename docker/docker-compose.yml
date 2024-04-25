@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:13
+    container_name: postgres-container
+    environment:
+      POSTGRES_PASSWORD: 12345678  # 设置PostgreSQL用户的密码
+      POSTGRES_USER: postgres          # （可选）设置PostgreSQL的默认用户，默认为postgres
+      POSTGRES_DB: oneword              # （可选）设置默认创建的数据库名称
+    volumes:
+      - postgres-data:/var/lib/postgresql/data  # 持久化PostgreSQL数据
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"  # 将宿主机的5432端口映射到容器的5432端口
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+volumes:
+  redis-data:
+  postgres-data:
